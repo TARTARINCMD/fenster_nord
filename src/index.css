@@ -57,6 +57,8 @@
 
 html,
 body {
+  /* The slide-in animation starts 28px to the side. Without clipping, mobile browsers widen the page and keep it wide. */
+  overflow-x: clip;
   background: #ffffff;
   color: var(--color-brand-teal);
   font-family: var(--font-sans);

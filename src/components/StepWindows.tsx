@@ -47,7 +47,7 @@ function WindowCard({ draft, index, expanded, attempted, canRemove, onToggle, on
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="font-extrabold">Fenster {index + 1}</p>
-            <p className="text-[15px] text-brand-teal/80">{summary(draft)}</p>
+            <p className="text-[0.9375rem] text-brand-teal/80">{summary(draft)}</p>
             {!valid && <p className="mt-1 text-sm font-semibold text-red-700">Bitte vervollständigen Sie dieses Fenster.</p>}
           </div>
           <button type="button" onClick={onToggle} className="min-h-11 shrink-0 rounded-lg bg-brand-green/15 px-4 font-bold">

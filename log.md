@@ -140,6 +140,14 @@ Entry format:
 - **Why:** A visible control is the usual signal for "tap to choose" and works for people who don't notice a border color. The disabled systems get a faded ring.
 - **Verified:** Screenshots of step 3 with and without a selection, 52 tests, clean build and lint, no JS errors.
 
+### 2026-11-02: Responsive check at five widths, sideways-scroll bug fixed
+- **Decision:** After reading Lovable's guide on responsive design (https://lovable.dev/guides/responsive-web-design-techniques-that-work) I took over only what applies: (1) test at several widths, not only 390 px, (2) font sizes in rem so they follow the user's text-size setting, (3) width and height on images. Skipped as not relevant here: container queries, `srcset`/`<picture>`, lazy loading, AVIF (the only images are an SVG logo and one PNG). The guide's statistics (Renault, Sentry, traffic shares) are marketing numbers and are not used.
+- **Found:** At 320, 360 and 430 px (mobile emulation) the landing page, system, price and summary screens could be dragged sideways by 28 px. At 768 and 1280 px there was no problem. Cause: the screen slide-in starts at `translateX(28px)`, the content briefly sticks out on the right, and mobile Chrome widens the page and does not shrink it back.
+- **Fix:** `overflow-x: clip` on `html, body` in `src/index.css`. After it: no horizontal overflow at 320, 360, 430, 768 and 1280 px on any screen (landing to summary).
+- **Also:** all `text-[Npx]` sizes became rem (`text-[0.9375rem]` etc.), the landing heading uses `clamp(2.25rem, 10vw, 2.75rem)` so "Fenster Nord" fits a 320 px screen, and the logo has `width`/`height`.
+- **Verified:** 52 tests, build and lint clean, no JS errors, flow and landing page rechecked in headless Chrome. Smallest text on the page is 15 px.
+- **Not done:** two-column layout on wide screens (the task is about phones, the narrow column on a desktop is acceptable).
+
 ### 2026-11-02: Repo published, `documents/` kept local
 - **Decision:** Pushed to https://github.com/TARTARINCMD/fenster_nord (public, branch `main`). `documents/` is in `.gitignore`.
 - **Why:** The repo is public. The customer PDFs and the interview notes in PROJECT.md shouldn't be published before submission. `data/produktliste.csv` is in the repo because the app needs it at build time.
@@ -179,11 +187,17 @@ Entry format:
 - **How noticed:** On the screenshot of the price screen: the total read "1 . 923 , 28 €" and the breakdown "663 , 60 €". In Schibsted Grotesk the tabular feature also widens the punctuation. Tests can't catch this.
 - **Change:** Removed `tabular-nums` everywhere. Right-aligned amounts are still readable. Lesson: check typographic features on the real font before recommending them.
 
+
+### 2026-11-02: Blamed the wrong element for the sideways scroll
+- **What the AI said:** First diagnosis: the faint rotated check-mark image on the landing page makes the page wider. Its bisect "proved" it, because hiding the image made the overflow disappear. I changed the image twice (paint containment, then a background image) and wrote a code comment that blamed it.
+- **How noticed:** The overflow stayed, with the image gone. The numbers gave it away: the page was always exactly 28 px too wide, which is the `translateX(28px)` of the slide animation. Any style change in the test had made the browser re-fit its viewport, so hiding anything "fixed" it.
+- **Change:** Reverted both image changes (including the wrong comment), clipped horizontal overflow on `html, body`, and checked all screens at five widths.
+
 ---
 
 ## Open points and README checklist
 
-Status of the code: the first commit (setup and CSV parser) is pushed to https://github.com/TARTARINCMD/fenster_nord. Everything after it (pricing, UI, landing page, chatbot, font, this log) is **not yet committed**. Deploy on Vercel is **not done**. README is **not written**.
+Status of the code: everything up to the Schibsted Grotesk font and this checklist is pushed to https://github.com/TARTARINCMD/fenster_nord (`main`, last commit `a79c820`, pushed by the user). Changes made after that commit are not on GitHub yet. Deploy on Vercel is **not done**. README is **not written**.
 
 **Assumptions to name in the README** (the customer confirmed items 1 to 7 of A1–A7 by email on 2026-11-02, the rest are ours):
 - One system for the whole order (simplification, per-window systems are a small change).
@@ -204,12 +218,14 @@ Status of the code: the first commit (setup and CSV parser) is pushed to https:/
 6. Dimensions: outer frame size in mm in the CSV, cm in the PDF example, customers only know the old window. The CSV also mixes number formats ("1,0" and "0,90"), uses semicolons and decimal commas.
 7. The price sheet is marked "interne Arbeitsunterlage", so the BEG sales argument isn't meant for customers.
 
-**AI mistakes for the README:** see the section above. Keep it honest and specific: 2 from before the build (BEG source, "vor Vertragsabschluss"), then the window copy id, chatbot keyword matching, "0,9" instead of "0,90", tabular numerals.
+**AI mistakes for the README:** see the section above. Keep it honest and specific: 2 from before the build (BEG source, "vor Vertragsabschluss"), then the window copy id, chatbot keyword matching, "0,9" instead of "0,90", tabular numerals, the wrongly blamed image behind the sideways scroll.
 
 **Not verified yet:**
-- A real phone (so far only headless Chrome at 390 px with touch emulation).
+- A real phone (so far only headless Chrome with touch emulation, at 320, 360, 390, 430, 768 and 1280 px).
 - The deployed site.
 - The feel of the animations (only screenshots so far).
 - Contrast of every text and color combination (yellow with white text is avoided by rule, nothing measured).
+
+**Open question, privacy:** The font is loaded from Google Fonts (fonts.googleapis.com). For a German site this can be a data-protection problem (German courts have ruled against embedding Google Fonts from Google's servers without consent). Option: self-host the font files (for example the `@fontsource` package) so no request goes to Google. Not decided yet, not verified legally.
 
 **Still to do:** commit and push, deploy on Vercel, test on a phone, README (one page), mail to dinse@moovin.de and heymann@mvn.energy at the latest one working day before the interview.

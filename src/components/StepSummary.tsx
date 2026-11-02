@@ -63,8 +63,8 @@ export function StepSummary({ state, dispatch }: StepProps) {
 
       <section className="mt-3 rounded-2xl border-2 border-line p-4">
         <h2 className="font-extrabold">Richtpreis (unverbindlich)</h2>
-        <p className="mt-1 text-[32px] font-extrabold leading-tight">{formatEUR(result.gross)}</p>
-        <p className="text-[15px] text-brand-teal/80">
+        <p className="mt-1 text-[2rem] font-extrabold leading-tight">{formatEUR(result.gross)}</p>
+        <p className="text-[0.9375rem] text-brand-teal/80">
           inkl. {Math.round(RULES.vatRate * 100)} % USt. · netto {formatEUR(result.net)} · {product.name}
         </p>
         <details className="mt-3">

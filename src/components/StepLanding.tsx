@@ -85,7 +85,7 @@ export function StepLanding({ dispatch }: StepProps) {
           aria-hidden
           className="pointer-events-none absolute -right-16 bottom-24 size-72 rotate-6 opacity-10"
         />
-        <h1 className="relative animate-fade-up text-[44px] leading-none font-extrabold">Fenster Nord</h1>
+        <h1 className="relative animate-fade-up text-[clamp(2.25rem,10vw,2.75rem)] leading-none font-extrabold">Fenster Nord</h1>
         <p
           className="relative mt-5 animate-fade-up text-xl font-semibold text-brand-yellow"
           style={{ animationDelay: '200ms' }}
@@ -125,7 +125,7 @@ export function StepLanding({ dispatch }: StepProps) {
                 </span>
                 <span className="rounded-2xl bg-brand-green/10 px-4 py-3">
                   <span className="block font-extrabold">{title}</span>
-                  <span className="block text-[15px] text-brand-teal/80">{text}</span>
+                  <span className="block text-[0.9375rem] text-brand-teal/80">{text}</span>
                 </span>
               </Reveal>
             ))}
@@ -145,7 +145,7 @@ export function StepLanding({ dispatch }: StepProps) {
                 className="rounded-2xl border-2 border-brand-yellow/60 bg-brand-yellow/10 p-4"
               >
                 <span className="block font-extrabold">{title}</span>
-                <span className="block text-[15px] text-brand-teal/80">{text}</span>
+                <span className="block text-[0.9375rem] text-brand-teal/80">{text}</span>
               </Reveal>
             ))}
           </ul>

@@ -71,7 +71,7 @@ export function Breakdown({ quote, pricePerM2 }: { quote: Quote; pricePerM2: num
 
 export function GoodToKnow() {
   return (
-    <ul className="list-disc space-y-2 pl-5 text-[15px] leading-relaxed">
+    <ul className="list-disc space-y-2 pl-5 text-[0.9375rem] leading-relaxed">
       <li>Das Aufmaß vor Ort ist kostenlos. Erst danach gibt es einen verbindlichen Preis.</li>
       <li>Die Lieferzeit beträgt in der Regel 6 bis 8 Wochen ab Aufmaß.</li>
       <li>Weiß ist Standard. Andere Farben und Dekore gibt es auf Anfrage.</li>
@@ -106,11 +106,11 @@ export function StepPrice({ state, dispatch }: StepProps) {
       <StepTitle title="Ihr Richtpreis" />
       <div className="rounded-2xl bg-brand-teal p-5 text-white">
         <p className="text-sm font-semibold uppercase tracking-wide text-brand-yellow">Unverbindlicher Richtpreis</p>
-        <p className="mt-1 text-[40px] font-extrabold leading-tight">{formatEUR(result.gross)}</p>
-        <p className="mt-1 text-[15px]">
+        <p className="mt-1 text-[2.5rem] font-extrabold leading-tight">{formatEUR(result.gross)}</p>
+        <p className="mt-1 text-[0.9375rem]">
           inkl. {Math.round(RULES.vatRate * 100)} % USt. · netto {formatEUR(result.net)}
         </p>
-        <p className="mt-3 text-[15px] opacity-90">
+        <p className="mt-3 text-[0.9375rem] opacity-90">
           {result.windowCount} Fenster mit {product.name}, inklusive Ausbau, Entsorgung und Einbau.
         </p>
       </div>

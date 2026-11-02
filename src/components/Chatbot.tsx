@@ -58,7 +58,7 @@ export function Chatbot() {
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`max-w-[85%] animate-fade-up rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${
+            className={`max-w-[85%] animate-fade-up rounded-2xl px-4 py-3 text-[0.9375rem] leading-relaxed ${
               m.from === 'bot' ? 'bg-brand-teal/5' : 'ml-auto bg-brand-yellow'
             }`}
           >

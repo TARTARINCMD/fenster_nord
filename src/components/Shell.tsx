@@ -27,7 +27,7 @@ export function Shell({ step, onBack, primary, footerExtra, children }: ShellPro
               <span aria-hidden>←</span> Zurück
             </button>
           ) : (
-            <img src="/mvn-logo.svg" alt="mvn.energy" className="h-9" />
+            <img src="/mvn-logo.svg" alt="mvn.energy" width={66} height={36} className="h-9 w-auto" />
           )}
           {step && (
             <span className="text-sm font-semibold text-brand-teal/70">

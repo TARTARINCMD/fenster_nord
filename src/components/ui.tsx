@@ -65,7 +65,7 @@ export function Notice({ tone = 'info', children }: { tone?: 'info' | 'warn' | '
     warn: 'border-brand-yellow bg-brand-yellow/20',
     good: 'border-brand-green/40 bg-brand-green/10',
   }
-  return <div className={`animate-fade-up rounded-xl border-2 p-4 text-[15px] leading-relaxed ${tones[tone]}`}>{children}</div>
+  return <div className={`animate-fade-up rounded-xl border-2 p-4 text-[0.9375rem] leading-relaxed ${tones[tone]}`}>{children}</div>
 }
 
 /** Radio circle: empty ring when not selected, filled green with a check when selected. */
@@ -110,7 +110,7 @@ export function ChoiceCard({
       <RadioDot selected={selected} muted={disabled} />
       <span className="min-w-0 flex-1">
         <span className="block font-extrabold">{title}</span>
-        {children && <span className="mt-1 block text-[15px] leading-snug text-brand-teal/80">{children}</span>}
+        {children && <span className="mt-1 block text-[0.9375rem] leading-snug text-brand-teal/80">{children}</span>}
       </span>
     </button>
   )
@@ -122,7 +122,7 @@ export function Chip({ onClick, selected = false, children }: { onClick: () => v
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`min-h-11 rounded-full border-2 border-brand-yellow px-4 text-[15px] font-semibold transition duration-150 active:scale-95 ${
+      className={`min-h-11 rounded-full border-2 border-brand-yellow px-4 text-[0.9375rem] font-semibold transition duration-150 active:scale-95 ${
         selected ? 'bg-brand-yellow' : 'bg-brand-yellow/15'
       }`}
     >
@@ -152,7 +152,7 @@ export function ToggleRow({
       />
       <span>
         <span className="block font-semibold">{title}</span>
-        {children && <span className="block text-[15px] text-brand-teal/80">{children}</span>}
+        {children && <span className="block text-[0.9375rem] text-brand-teal/80">{children}</span>}
       </span>
     </label>
   )
@@ -161,8 +161,8 @@ export function ToggleRow({
 export function StepTitle({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div className="mb-6">
-      <h1 className="text-[28px] font-extrabold leading-tight">{title}</h1>
-      {subtitle && <p className="mt-2 text-[17px] leading-relaxed text-brand-teal/80">{subtitle}</p>}
+      <h1 className="text-[1.75rem] font-extrabold leading-tight">{title}</h1>
+      {subtitle && <p className="mt-2 text-[1.0625rem] leading-relaxed text-brand-teal/80">{subtitle}</p>}
     </div>
   )
 }
