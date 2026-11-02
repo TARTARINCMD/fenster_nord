@@ -62,6 +62,24 @@ function cm(mm: number): string {
   return String(mm / 10).replace('.', ',')
 }
 
+type Limits = Pick<Product, 'widthMin' | 'widthMax' | 'heightMin' | 'heightMax'>
+
+/** A width is possible if at least one system offers it. */
+export function checkGlobalWidth(all: Limits[], widthMm: number): string | undefined {
+  const min = Math.min(...all.map((p) => p.widthMin))
+  const max = Math.max(...all.map((p) => p.widthMax))
+  if (widthMm >= min && widthMm <= max) return undefined
+  return `Die Breite muss zwischen ${cm(min)} und ${cm(max)} cm liegen.`
+}
+
+/** A height is possible if at least one system offers it. */
+export function checkGlobalHeight(all: Limits[], heightMm: number): string | undefined {
+  const min = Math.min(...all.map((p) => p.heightMin))
+  const max = Math.max(...all.map((p) => p.heightMax))
+  if (heightMm >= min && heightMm <= max) return undefined
+  return `Die Höhe muss zwischen ${cm(min)} und ${cm(max)} cm liegen.`
+}
+
 /** Checks the window size against the limits of the chosen system (outer frame, mm). */
 export function checkSize(product: Product, widthMm: number, heightMm: number): SizeCheck {
   const result: SizeCheck = { ok: true }

@@ -92,12 +92,26 @@ Entry format:
 - **Result:** `src/lib/products.ts` parses `;` and decimal commas into a typed `Product[]`. 6 tests pass (`npm test`), `npm run build` is clean.
 - **Note:** `data/produktliste.csv` must be re-copied if Fenster Nord sends a corrected list.
 
+### 2026-11-02: UX flow approved (5 screens + summary)
+- **Decision:** 1) Postcode + floor → 2) Windows → 3) System → 4) Price → 5) Request or appointment → summary. Windows come **before** the system, so step 3 can grey out systems that don't fit the sizes and show the total per system. **One system for the whole order**, to be named as a simplification in the README (per-window systems would need the product on `WindowItem` instead of `QuoteInput`).
+- **Source:** Task PDF ("Menschen, die keine Fachleute sind und das am Handy machen"), PROJECT.md "UX direction", Fenster Nord reply Nr. 6 (ask for the existing window's size, short explanation, checked at measurement) and Nr. 1 (sill optional).
+- **Added by the user:** contact form (name, phone/email, optional time), a fake **appointment picker** and a **scripted chatbot**. All three are labelled "Vorschau" or "Demo" and send nothing. The chatbot has fixed answers from the documents, no AI model, no backend, and never promises prices or funding.
+- **Own additions, not from documents:** typical-size chips (60×60, 100×120, 120×140, 180×140) only prefill the form. Appointment slots are made up for the preview.
+- **Alternatives:** system first (can't show price per system, size errors come later); per-window systems.
+
 ### 2026-11-02: Step 2, pricing core done
 - **Decision:** `pricing.ts` (rules in one `RULES` object, each with its source), `validation.ts` (size limits, postcode, notices), `funding.ts` (Uw ≤ 0,95 hint). Order per window: minimum area → price per m² → fixed −15 % or Stulp +120 → sum → −5 % if ≥ 10 pieces → + shutters + installation (450 + 60 × pieces + optional sills) → 19 % VAT.
 - **Source:** Preise-und-Produkte Nr. 1–6, Montagebedingungen §2–§5, Fenster Nord's reply (see above).
 - **Result:** 39 tests pass, including both fixtures from PROJECT.md (663,60 € and 2.988,92 € gross), the 9 vs 10 boundary, size limits per system and all notices. Build and lint are clean.
 - **Rounding:** only totals are rounded (net, VAT, gross). The shown components (windows, discount, shutters, installation) are rounded separately for display, so a breakdown can differ from the total by 1 cent in rare cases. Revisit if this shows up in the UI.
 - **Not priced, by design:** two-person installation, scaffold, surcharge outside 20000–25999. The last one returns "no price" and a notice instead.
+
+### 2026-11-02: Step 3, mobile UI done
+- **Decision:** Five screens plus summary as approved, state in one `useReducer` (`src/state.ts`), no backend. Sizes typed in cm, stored in mm. Step 3 prices every system for the entered windows (`src/lib/systems.ts`) and greys out systems that don't fit, with the reason. Price screen shows net lines, then VAT, then gross, with the formula per window (area × €/m², minimum area, −15 %, +120 €). The footer button is fixed at the bottom, the chat button sits above it.
+- **Source:** CLAUDE.md conventions, approved flow (see "UX flow approved").
+- **Verified:** 51 unit tests, clean build and lint. Drove the whole flow in headless Chrome at 390×844 (postcode outside area blocks, empty-window errors, 2 windows with shutter and fixed glazing, Therm 82, appointment, summary, chatbot): no JS errors, the totals match the hand calculation (1.616,20 € net, 1.923,28 € gross). **Not yet checked:** a real phone, the deployed site.
+- **Display choices:** extras (Stulp, Rollladen, Fensterbank) are shown gross on the window screen so the customer sees one tax basis. The breakdown stays net with VAT added at the end, so it adds up to the total.
+- **Known limitation:** a single system for the whole order (see above), and the quote's rounding note from step 2.
 
 ### 2026-11-02: Repo published, `documents/` kept local
 - **Decision:** Pushed to https://github.com/TARTARINCMD/fenster_nord (public, branch `main`). `documents/` is in `.gitignore`.
@@ -117,3 +131,18 @@ Entry format:
 - **What the AI said:** A first draft said the funding application must come before signing the contract.
 - **How noticed:** Checked against the guideline text.
 - **Change:** Correct wording: application before project start, with a conditional contract attached (Nr. 9.2.1).
+
+### 2026-11-02: Copying a window gave the copy no id
+- **What the AI said:** `createDraft({ ...last, id: undefined })` to copy a window. In the first version the spread came after the default `id`, so the copy got `id: undefined`.
+- **How noticed:** Found while reviewing my own code before running it. Would have broken keys and edits of copied windows.
+- **Change:** `id` is assigned after the spread (`partial.id ?? newId()`). Test "copying a draft gives it a new id" added.
+
+### 2026-11-02: Chatbot keywords matched parts of words
+- **What the AI said:** First matching used `includes()`. The keyword "beg" would match "Baubeginn" and send a funding answer, "ust" would match "Austausch" and send the VAT answer.
+- **How noticed:** Reviewing the keyword list before the first run. Test "Beginn does not trigger the BEG answer" added.
+- **Change:** Short keywords (≤ 4 letters) must match a whole word, longer ones match the start of a word. "ust" was replaced by "umsatzsteuer".
+
+### 2026-11-02: Uw shown as "0,9" instead of "0,90"
+- **What the AI said:** The funding hint printed `String(0.9)` as "0,9 W/(m²K)", while the product list and the system cards show "0,90".
+- **How noticed:** On the screenshot of the price screen, not in the tests. Unit tests passed because no test looked at the number format.
+- **Change:** `toFixed(2)` and a test for "Uw-Wert von 0,90 W/(m²K)".

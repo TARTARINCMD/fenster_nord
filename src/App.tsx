@@ -1,11 +1,33 @@
-import { products } from './lib/products'
+import { useEffect, useReducer } from 'react'
+import { Chatbot } from './components/Chatbot'
+import { StepLocation } from './components/StepLocation'
+import { StepPrice } from './components/StepPrice'
+import { StepRequest } from './components/StepRequest'
+import { StepSummary } from './components/StepSummary'
+import { StepSystem } from './components/StepSystem'
+import { StepWindows } from './components/StepWindows'
+import { initialState, reducer } from './state'
 
 export default function App() {
+  const [state, dispatch] = useReducer(reducer, undefined, initialState)
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [state.step])
+
+  const props = { state, dispatch }
+  // Steps 1-5 have a fixed bottom button, the chat button has to sit above it.
+  const hasFooter = state.step >= 1 && state.step <= 5
+
   return (
-    <main className="mx-auto max-w-md px-4 py-8">
-      <img src="/mvn-logo.svg" alt="mvn.energy" className="h-10" />
-      <h1 className="mt-6 text-2xl font-extrabold">Fenster Nord Richtpreis-Rechner</h1>
-      <p className="mt-2">{products.length} Fenstersysteme geladen.</p>
-    </main>
+    <>
+      {state.step === 1 && <StepLocation {...props} />}
+      {state.step === 2 && <StepWindows {...props} />}
+      {state.step === 3 && <StepSystem {...props} />}
+      {state.step === 4 && <StepPrice {...props} />}
+      {state.step === 5 && <StepRequest {...props} />}
+      {state.step === 6 && <StepSummary {...props} />}
+      <Chatbot raised={hasFooter} />
+    </>
   )
 }

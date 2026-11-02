@@ -250,5 +250,6 @@ describe('BEG hint (BEG EM 17.07.2026, Uw ≤ 0,95)', () => {
     expect(hint).toContain('Aufmaß')
     expect(hint).toContain('Eine Förderzusage ist das nicht')
     expect(hint).not.toMatch(/€|\d\s?%/)
+    expect(hint).toContain('Uw-Wert von 0,90 W/(m²K)') // same notation as the product list, not "0,9"
   })
 })

@@ -18,5 +18,5 @@ export function mayQualifyForBeg(product: Product): boolean {
  */
 export function begHint(product: Product): string | null {
   if (!mayQualifyForBeg(product)) return null
-  return `Mit einem Uw-Wert von ${String(product.uw).replace('.', ',')} W/(m²K) kann dieses Fenster die technischen Anforderungen der BEG-Förderung erfüllen. Eine Förderzusage ist das nicht: Der Antrag muss vor Vorhabenbeginn gestellt werden, und wir prüfen die Voraussetzungen beim Aufmaß.`
+  return `Mit einem Uw-Wert von ${product.uw.toFixed(2).replace('.', ',')} W/(m²K) kann dieses Fenster die technischen Anforderungen der BEG-Förderung erfüllen. Eine Förderzusage ist das nicht: Der Antrag muss vor Vorhabenbeginn gestellt werden, und wir prüfen die Voraussetzungen beim Aufmaß.`
 }
