@@ -72,11 +72,19 @@ Entry format:
 - **Why:** Matches the fixture and avoids rounding drift.
 
 ### 2026-11-02: Design uses mvn.energy branding
-- **Decision:** The app uses mvn.energy's look: logo and check-mark favicon, yellow `#F5C745` / green `#469878` / dark teal `#0F292E`, Plus Jakarta Sans (ExtraBold headings, Regular body, from Google Fonts). The copy still names Fenster Nord as the provider.
+- **Decision:** The app uses mvn.energy's look: logo and check-mark favicon, yellow `#F5C745` / green `#469878` / dark teal `#0F292E`. The typeface was first Plus Jakarta Sans (mvn's own) and was replaced, see "Typeface: Schibsted Grotesk". The copy still names Fenster Nord as the provider.
 - **Source:** https://www.mvn.energy (HTML/CSS and logo SVG inspected 2026-11-02). Not in `documents/`: the task PDF leaves the look to us ("Wie die Anwendung aussieht … entscheidest du").
 - **Alternatives:** Neutral Fenster Nord look with mvn colors as inspiration only, no logo.
 - **Why:** Chosen by the user. Shows the company's brand was researched. Risk: the app looks like an mvn product while the customer is Fenster Nord, so be ready to explain this in the interview.
-- **Assets** (saved in the session scratchpad, to be copied to `public/` at setup): logo SVG `92265b_8cc963ea6f514e72874053c4c7b3e8fa.svg`, `favicon.png`, `og.png`. The other logo SVG on the site returned 403.
+- **Assets:** logo SVG is `public/mvn-logo.svg` (from `92265b_8cc963ea6f514e72874053c4c7b3e8fa.svg`), favicon is `public/favicon.png`. `og.png` was downloaded but is not used. A second logo SVG on the site returned 403.
+
+### 2026-11-02: Typeface: Schibsted Grotesk
+- **Decision:** Headings and body use Schibsted Grotesk (weights 400, 600, 700, 800, Google Fonts), set once as `--font-sans` in `src/index.css`. Replaces Plus Jakarta Sans.
+- **Source:** None in `documents/`. User request: the old font "looks too AI-ish, every default Claude project uses this one". Plus Jakarta Sans is the font on mvn.energy's own site, so this departs from their typography. Colors and logo still follow mvn.
+- **Alternatives offered:** Fraunces + DM Sans (warm serif), Archivo (industrial), Bricolage Grotesque + Hanken Grotesk (playful).
+- **Why:** A sturdy grotesque with a Northern European, practical character fits a Hamburg craft business and stays easy to read on a phone. Less common than the usual geometric sans.
+- **Not used:** Tabular numerals. In this font they also widen the punctuation ("1 . 923 , 28 €"), see AI mistakes.
+- **Verified:** The font loads in headless Chrome (`document.fonts.check`), price and breakdown screens checked on a screenshot, 52 tests, clean build and lint.
 
 ---
 
@@ -87,7 +95,7 @@ Entry format:
 - **Source:** all files in `documents/`.
 
 ### 2026-11-02: Step 1, project setup done
-- **Decision:** Scaffolded Vite + React 19 + TS in the repo root, added Tailwind 4 (`@tailwindcss/vite`) and Vitest. `git init` done, nothing committed yet. Brand tokens live in `src/index.css`. Logo and favicon are in `public/`.
+- **Decision:** Scaffolded Vite + React 19 + TS in the repo root, added Tailwind 4 (`@tailwindcss/vite`) and Vitest. `git init` done (first commit and push: see "Repo published"). Brand tokens live in `src/index.css`. Logo and favicon are in `public/`.
 - **Source:** CLAUDE.md "Conventions". `data/produktliste.csv` is a copy of `documents/Fenster-Nord_Produktliste.csv` (the original stays untouched).
 - **Result:** `src/lib/products.ts` parses `;` and decimal commas into a typed `Product[]`. 6 tests pass (`npm test`), `npm run build` is clean.
 - **Note:** `data/produktliste.csv` must be re-copied if Fenster Nord sends a corrected list.
@@ -107,7 +115,7 @@ Entry format:
 - **Not priced, by design:** two-person installation, scaffold, surcharge outside 20000–25999. The last one returns "no price" and a notice instead.
 
 ### 2026-11-02: Step 3, mobile UI done
-- **Decision:** Five screens plus summary as approved, state in one `useReducer` (`src/state.ts`), no backend. Sizes typed in cm, stored in mm. Step 3 prices every system for the entered windows (`src/lib/systems.ts`) and greys out systems that don't fit, with the reason. Price screen shows net lines, then VAT, then gross, with the formula per window (area × €/m², minimum area, −15 %, +120 €). The footer button is fixed at the bottom, the chat button sits above it.
+- **Decision:** Five screens plus summary as approved, state in one `useReducer` (`src/state.ts`), no backend. Sizes typed in cm, stored in mm. Step 3 prices every system for the entered windows (`src/lib/systems.ts`) and greys out systems that don't fit, with the reason. Price screen shows net lines, then VAT, then gross, with the formula per window (area × €/m², minimum area, −15 %, +120 €). The footer button is fixed at the bottom. (The chat button first sat above it, it was later moved to the summary only.)
 - **Source:** CLAUDE.md conventions, approved flow (see "UX flow approved").
 - **Verified:** 51 unit tests, clean build and lint. Drove the whole flow in headless Chrome at 390×844 (postcode outside area blocks, empty-window errors, 2 windows with shutter and fixed glazing, Therm 82, appointment, summary, chatbot): no JS errors, the totals match the hand calculation (1.616,20 € net, 1.923,28 € gross). **Not yet checked:** a real phone, the deployed site.
 - **Display choices:** extras (Stulp, Rollladen, Fensterbank) are shown gross on the window screen so the customer sees one tax basis. The breakdown stays net with VAT added at the end, so it adds up to the total.
@@ -165,3 +173,43 @@ Entry format:
 - **What the AI said:** The funding hint printed `String(0.9)` as "0,9 W/(m²K)", while the product list and the system cards show "0,90".
 - **How noticed:** On the screenshot of the price screen, not in the tests. Unit tests passed because no test looked at the number format.
 - **Change:** `toFixed(2)` and a test for "Uw-Wert von 0,90 W/(m²K)".
+
+### 2026-11-02: Tabular numerals made the prices look broken
+- **What the AI said:** When picking the new font I suggested switching prices to tabular numerals "so the digits line up", and added `tabular-nums` to the total, the system prices and the breakdown.
+- **How noticed:** On the screenshot of the price screen: the total read "1 . 923 , 28 €" and the breakdown "663 , 60 €". In Schibsted Grotesk the tabular feature also widens the punctuation. Tests can't catch this.
+- **Change:** Removed `tabular-nums` everywhere. Right-aligned amounts are still readable. Lesson: check typographic features on the real font before recommending them.
+
+---
+
+## Open points and README checklist
+
+Status of the code: the first commit (setup and CSV parser) is pushed to https://github.com/TARTARINCMD/fenster_nord. Everything after it (pricing, UI, landing page, chatbot, font, this log) is **not yet committed**. Deploy on Vercel is **not done**. README is **not written**.
+
+**Assumptions to name in the README** (the customer confirmed items 1 to 7 of A1–A7 by email on 2026-11-02, the rest are ours):
+- One system for the whole order (simplification, per-window systems are a small change).
+- Sill length = window width, sill chosen per window. Confirm at measurement.
+- Rollladen allowed on fixed glazing (Preise-und-Produkte Nr. 4 has no restriction, PROJECT.md pseudocode had one).
+- Window size is the outer frame size, taken from the old window (customer confirmed).
+- Single price value, not a range (customer left it to us).
+- Typical-size chips, appointment slots and the chatbot answers are our own UX additions. Chatbot is scripted, no AI model.
+- Rounding: only totals are rounded, so a breakdown can differ by 1 cent in rare cases.
+- Two-person installation, scaffold and the surcharge outside 20000–25999 are never priced, only announced.
+
+**What stood out in the documents** (findings for the README):
+1. Installation price conflict: 180 € per window (Preise-und-Produkte) against 450 € + 60 € per window + sills (Montagebedingungen). For 8 windows 1.440 € against 930 €. Break-even at 3,75 windows. The customer says the 180 € is outdated, although that sheet has the **later date** (01.09.2026) than the Montagebedingungen (03/2026).
+2. The BEG claim "all 3-fach windows qualify" is wrong. BEG EM of 17.07.2026 (Anlage TMA Nr. 1.1) needs Uw ≤ 0,95. Slim 75 (1,0) and Classic 70 (1,1, only 2-fach) don't qualify, Nordic 68 (0,95) sits exactly on the limit. Application before project start with a conditional contract (Nr. 9.2.1), energy efficiency expert (Nr. 9.3).
+3. All prices are net, but the customers are private people: gross is shown prominently, net additionally (19 %).
+4. Missing prices: two-person installation above 3,0 m², scaffold from the 2nd floor, surcharge outside the service area.
+5. The order of the price rules is not stated (minimum area, fixed discount, Stulp, volume discount). Customer confirmed ours.
+6. Dimensions: outer frame size in mm in the CSV, cm in the PDF example, customers only know the old window. The CSV also mixes number formats ("1,0" and "0,90"), uses semicolons and decimal commas.
+7. The price sheet is marked "interne Arbeitsunterlage", so the BEG sales argument isn't meant for customers.
+
+**AI mistakes for the README:** see the section above. Keep it honest and specific: 2 from before the build (BEG source, "vor Vertragsabschluss"), then the window copy id, chatbot keyword matching, "0,9" instead of "0,90", tabular numerals.
+
+**Not verified yet:**
+- A real phone (so far only headless Chrome at 390 px with touch emulation).
+- The deployed site.
+- The feel of the animations (only screenshots so far).
+- Contrast of every text and color combination (yellow with white text is avoided by rule, nothing measured).
+
+**Still to do:** commit and push, deploy on Vercel, test on a phone, README (one page), mail to dinse@moovin.de and heymann@mvn.energy at the latest one working day before the interview.
