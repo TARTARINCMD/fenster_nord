@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+
+/* mvn.energy brand tokens (see log.md, "Design uses mvn.energy branding") */
+@theme {
+  --color-brand-yellow: #f5c745;
+  --color-brand-green: #469878;
+  --color-brand-teal: #0f292e;
+  --color-line: #e2e2e2;
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+html,
+body {
+  background: #ffffff;
+  color: var(--color-brand-teal);
+  font-family: var(--font-sans);
+}
