@@ -27,8 +27,22 @@ Entry format:
 - **Alternatives:** Wait for answers before building.
 - **Why:** The time frame doesn't allow waiting. Each assumption is replaceable in `src/lib/`.
 
-### 2026-11-02: Shutter not offered for fixed glazing
-- **Decision:** For now, no Rollladen option on fixed-glazing windows. **Open, confirm with user.**
+### 2026-11-02: Fenster Nord answered the clarification email (Frederik), A1–A7 confirmed
+- **Decision:** All seven assumptions are now confirmed by the customer, not just working assumptions:
+  1. **Installation:** Montagebedingungen apply (450 € flat + 60 € per old window). The 180 € per window is outdated. The inside sill (38 €/m) is **optional**, offered as an extra.
+  2. **Funding:** per-system hint by Uw only, no blanket claim, no amount. Mention application before project start and check at measurement. They **don't offer** barrier-free or burglar-resistant versions, so the 1,1 exception doesn't apply.
+  3. **VAT:** 19 %, gross prominent, net additionally.
+  4. **Missing surcharges:** don't include, show "wird beim Aufmaß geklärt". Outside the service area: a notice instead of a price.
+  5. **Order:** as in A5. Minimum area **also applies to fixed glazing**. "Ab 10 Fenstern" counts **pieces**. Discount applies to the window price including opening type (so the Stulp surcharge), not to shutters and installation.
+  6. **Size:** ask for the existing window's size, with a short explanation and a note that it's checked at measurement.
+  7. **Display:** single value with breakdown, labelled "unverbindlich". (Their words: "Deine Entscheidung", so this one is ours.)
+- **Source:** reply from Fenster Nord (Frederik), received 2026-11-02, pasted by the user. Not in `documents/`.
+- **Why it matters:** these were the main conflicts in the documents. For the README: customer confirmed, list the date. Supersedes "working assumptions" above for items 1–7, and confirms the volume-discount and BEG-threshold entries.
+- **Still not answered:** shutter on fixed glazing (below), sill length, and whether the sill is per window or per order.
+
+### 2026-11-02: Shutter allowed on fixed glazing (reversed)
+- **Decision:** Rollladen is allowed on every opening type, fixed glazing included. Reverses the PROJECT.md pseudocode (user agreed). Listed in the README as "confirm at measurement", along with sill length = window width and sill chosen per window.
+- **Original proposal (dropped):** no Rollladen option on fixed-glazing windows.
 - **Source:** none: our own assumption (Preise-und-Produkte rule 4 has no such restriction).
 - **Alternatives:** Allow shutters on every opening type.
 - **Why:** PROJECT.md pseudocode has it, but the documents don't. Fixed windows can have shutters in practice, so this is a weak assumption.
@@ -77,6 +91,18 @@ Entry format:
 - **Source:** CLAUDE.md "Conventions". `data/produktliste.csv` is a copy of `documents/Fenster-Nord_Produktliste.csv` (the original stays untouched).
 - **Result:** `src/lib/products.ts` parses `;` and decimal commas into a typed `Product[]`. 6 tests pass (`npm test`), `npm run build` is clean.
 - **Note:** `data/produktliste.csv` must be re-copied if Fenster Nord sends a corrected list.
+
+### 2026-11-02: Step 2, pricing core done
+- **Decision:** `pricing.ts` (rules in one `RULES` object, each with its source), `validation.ts` (size limits, postcode, notices), `funding.ts` (Uw ≤ 0,95 hint). Order per window: minimum area → price per m² → fixed −15 % or Stulp +120 → sum → −5 % if ≥ 10 pieces → + shutters + installation (450 + 60 × pieces + optional sills) → 19 % VAT.
+- **Source:** Preise-und-Produkte Nr. 1–6, Montagebedingungen §2–§5, Fenster Nord's reply (see above).
+- **Result:** 39 tests pass, including both fixtures from PROJECT.md (663,60 € and 2.988,92 € gross), the 9 vs 10 boundary, size limits per system and all notices. Build and lint are clean.
+- **Rounding:** only totals are rounded (net, VAT, gross). The shown components (windows, discount, shutters, installation) are rounded separately for display, so a breakdown can differ from the total by 1 cent in rare cases. Revisit if this shows up in the UI.
+- **Not priced, by design:** two-person installation, scaffold, surcharge outside 20000–25999. The last one returns "no price" and a notice instead.
+
+### 2026-11-02: Repo published, `documents/` kept local
+- **Decision:** Pushed to https://github.com/TARTARINCMD/fenster_nord (public, branch `main`). `documents/` is in `.gitignore`.
+- **Why:** The repo is public. The customer PDFs and the interview notes in PROJECT.md shouldn't be published before submission. `data/produktliste.csv` is in the repo because the app needs it at build time.
+- **Note:** `CLAUDE.md` refers to `documents/`, which isn't in the repo. Fine for the work here. Mention it in the README if reviewers need the sources.
 
 ---
 
