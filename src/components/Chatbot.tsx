@@ -7,7 +7,7 @@ interface Message {
   text: string
 }
 
-export function Chatbot({ raised }: { raised: boolean }) {
+export function Chatbot() {
   const [open, setOpen] = useState(false)
   const [text, setText] = useState('')
   const [messages, setMessages] = useState<Message[]>([{ from: 'bot', text: CHAT_GREETING }])
@@ -34,9 +34,7 @@ export function Chatbot({ raised }: { raised: boolean }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`fixed right-4 z-20 min-h-14 rounded-full bg-brand-teal px-5 font-extrabold text-white shadow-lg ${
-          raised ? 'bottom-28' : 'bottom-6'
-        }`}
+        className="fixed right-4 bottom-6 z-20 min-h-14 animate-pop rounded-full bg-brand-teal px-5 font-extrabold text-white shadow-lg transition duration-150 active:scale-95"
         aria-label="Fragen zu Fenster Nord stellen (Demo-Assistent)"
       >
         Fragen? 💬
@@ -45,7 +43,7 @@ export function Chatbot({ raised }: { raised: boolean }) {
   }
 
   return (
-    <div role="dialog" aria-label="Demo-Assistent" className="fixed inset-0 z-30 flex flex-col bg-white sm:mx-auto sm:max-w-md">
+    <div role="dialog" aria-label="Demo-Assistent" className="fixed inset-0 z-30 flex animate-slide-up flex-col bg-white sm:mx-auto sm:max-w-md">
       <div className="flex items-center justify-between bg-brand-teal px-4 py-3 text-white">
         <div>
           <p className="font-extrabold">Assistent von Fenster Nord</p>
@@ -60,7 +58,7 @@ export function Chatbot({ raised }: { raised: boolean }) {
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`max-w-[85%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${
+            className={`max-w-[85%] animate-fade-up rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${
               m.from === 'bot' ? 'bg-brand-teal/5' : 'ml-auto bg-brand-yellow'
             }`}
           >

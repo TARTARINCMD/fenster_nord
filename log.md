@@ -113,6 +113,25 @@ Entry format:
 - **Display choices:** extras (Stulp, Rollladen, Fensterbank) are shown gross on the window screen so the customer sees one tax basis. The breakdown stays net with VAT added at the end, so it adds up to the total.
 - **Known limitation:** a single system for the whole order (see above), and the quote's rounding note from step 2.
 
+### 2026-11-02: UX changes after the first review on the phone
+- **Decision:** (1) New **landing page** as step 0, with hero, the 4 steps and 4 facts. (2) **Transitions**: direction-aware slide between screens, fade-up for cards and notices, slide-up chat, all off under `prefers-reduced-motion`. (3) The **chat button only appears on the summary screen**, "questions come last". (4) **Colored buttons**: primary yellow, secondary solid teal, link-style buttons soft green, chips yellow (filled when selected), quantity stepper teal. (5) **Removed "Wie Fenster 1 noch einmal hinzufügen"**, because the quantity stepper already covers identical windows. The remaining add button says "+ Weiteres Fenster mit anderen Maßen".
+- **Source:** User feedback from looking at the app on a phone-size screen. Landing copy only uses facts from Preise-und-Produkte ("Wichtig für Kunden": unverbindlich, kostenloses Aufmaß, 6 bis 8 Wochen; Sortiment: Kunststoff, Holz, Holz-Alu, Alu) and Montagebedingungen §1 (Ausbau, Entsorgung, Einbau). The task brief says "in wenigen Minuten". No BEG claim and no invented numbers (no "3 Minuten", no customer counts). The page ends with a note that Fenster Nord is fictional, like the documents' footer.
+- **Alternatives:** Keep the copy button (rejected: redundant with quantity, one more concept to explain). Chat on every screen (rejected by the user).
+- **Technical note:** The slide animation moves only `<main>`. A transform on a parent would make the `position: fixed` footer jump during the animation.
+- **Verified:** 52 tests, clean build and lint, browser run through the new flow without JS errors, chat button absent before the summary and present on it.
+
+### 2026-11-02: Landing page made minimal
+- **Decision:** The first screen shows only "Fenster Nord" and the slogan "Neue Fenster. Klarer Preis." (teal full screen, faint check-mark, "Mehr erfahren ↓"). Scrolling reveals "Der Ablauf" (4 steps, the connecting line draws itself, steps fade in one after another), "Das sollten Sie wissen" (4 facts) and then the button "Richtpreis berechnen", which is no longer a fixed footer. The sentence "Danach können Sie ein kostenloses Aufmaß anfragen" was removed.
+- **Source:** User request. Facts unchanged, still from Preise-und-Produkte and Montagebedingungen (see "UX changes after the first review"). The slogan is marketing copy, not a claim from the documents.
+- **Note:** Hidden state is a class that is swapped out when an element scrolls into view, so people with reduced motion don't end up with invisible content.
+- **Verified:** In headless Chrome at 390 px: before scrolling all steps and facts are invisible, after "Mehr erfahren" they fade in, the button leads to step 1, no JS errors. 52 tests, build and lint clean. Not yet checked on a real phone.
+
+### 2026-11-02: Choice cards look clickable, bigger scroll cue
+- **Decision:** All option cards (floor, opening type, system) and the "Rückmeldung abwarten / Termin wählen" toggle get a radio circle (`RadioDot` in `ui.tsx`): empty ring when not selected, filled green with a white check when selected. "Mehr erfahren" and the arrow on the landing page are bigger (text-xl bold, arrow 48 px) and fully white.
+- **Source:** User feedback from a screenshot of step 3: the cards looked like plain boxes, with only a green border to show the selection.
+- **Why:** A visible control is the usual signal for "tap to choose" and works for people who don't notice a border color. The disabled systems get a faded ring.
+- **Verified:** Screenshots of step 3 with and without a selection, 52 tests, clean build and lint, no JS errors.
+
 ### 2026-11-02: Repo published, `documents/` kept local
 - **Decision:** Pushed to https://github.com/TARTARINCMD/fenster_nord (public, branch `main`). `documents/` is in `.gitignore`.
 - **Why:** The repo is public. The customer PDFs and the interview notes in PROJECT.md shouldn't be published before submission. `data/produktliste.csv` is in the repo because the app needs it at build time.
@@ -135,7 +154,7 @@ Entry format:
 ### 2026-11-02: Copying a window gave the copy no id
 - **What the AI said:** `createDraft({ ...last, id: undefined })` to copy a window. In the first version the spread came after the default `id`, so the copy got `id: undefined`.
 - **How noticed:** Found while reviewing my own code before running it. Would have broken keys and edits of copied windows.
-- **Change:** `id` is assigned after the spread (`partial.id ?? newId()`). Test "copying a draft gives it a new id" added.
+- **Change:** `id` is assigned after the spread (`partial.id ?? newId()`). The copy-window feature was removed later (see "UX changes after the first review"), the fix stays in `createDraft`.
 
 ### 2026-11-02: Chatbot keywords matched parts of words
 - **What the AI said:** First matching used `includes()`. The keyword "beg" would match "Baubeginn" and send a funding answer, "ust" would match "Austausch" and send the VAT answer.

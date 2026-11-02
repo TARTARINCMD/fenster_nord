@@ -1,5 +1,6 @@
 import { useEffect, useReducer } from 'react'
 import { Chatbot } from './components/Chatbot'
+import { StepLanding } from './components/StepLanding'
 import { StepLocation } from './components/StepLocation'
 import { StepPrice } from './components/StepPrice'
 import { StepRequest } from './components/StepRequest'
@@ -16,18 +17,21 @@ export default function App() {
   }, [state.step])
 
   const props = { state, dispatch }
-  // Steps 1-5 have a fixed bottom button, the chat button has to sit above it.
-  const hasFooter = state.step >= 1 && state.step <= 5
 
   return (
     <>
-      {state.step === 1 && <StepLocation {...props} />}
-      {state.step === 2 && <StepWindows {...props} />}
-      {state.step === 3 && <StepSystem {...props} />}
-      {state.step === 4 && <StepPrice {...props} />}
-      {state.step === 5 && <StepRequest {...props} />}
-      {state.step === 6 && <StepSummary {...props} />}
-      <Chatbot raised={hasFooter} />
+      {/* New element per step, so the slide animation (index.css, [data-dir]) runs on every step change. */}
+      <div key={state.step} data-dir={state.direction}>
+        {state.step === 0 && <StepLanding {...props} />}
+        {state.step === 1 && <StepLocation {...props} />}
+        {state.step === 2 && <StepWindows {...props} />}
+        {state.step === 3 && <StepSystem {...props} />}
+        {state.step === 4 && <StepPrice {...props} />}
+        {state.step === 5 && <StepRequest {...props} />}
+        {state.step === 6 && <StepSummary {...props} />}
+      </div>
+      {/* Questions come last: the chat is offered on the summary only. */}
+      {state.step === 6 && <Chatbot />}
     </>
   )
 }

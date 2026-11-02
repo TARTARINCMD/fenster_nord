@@ -33,14 +33,20 @@ describe('window drafts', () => {
     expect(toWindowItems([ok, createDraft()])).toBeNull()
     expect(toWindowItems([])).toBeNull()
   })
-  it('copying a draft gives it a new id', () => {
+  it('adding a window appends an empty one with its own id and opens it', () => {
     const state = initialState()
-    const filled = reducer(state, { type: 'updateWindow', id: state.windows[0].id, patch: { widthCm: '100', heightCm: '120' } })
-    const copied = reducer(filled, { type: 'addWindow', copyLast: true })
-    expect(copied.windows).toHaveLength(2)
-    expect(copied.windows[1].id).not.toBe(copied.windows[0].id)
-    expect(copied.windows[1]).toMatchObject({ widthCm: '100', heightCm: '120' })
-    expect(copied.expandedId).toBe(copied.windows[1].id)
+    const added = reducer(state, { type: 'addWindow' })
+    expect(added.windows).toHaveLength(2)
+    expect(added.windows[1].id).not.toBe(added.windows[0].id)
+    expect(added.windows[1]).toMatchObject({ widthCm: '', heightCm: '', quantity: 1 })
+    expect(added.expandedId).toBe(added.windows[1].id)
+  })
+  it('remembers the direction of the last step change', () => {
+    const start = initialState()
+    expect(start.step).toBe(0)
+    const forward = reducer(start, { type: 'go', step: 1 })
+    expect(forward.direction).toBe('forward')
+    expect(reducer(forward, { type: 'go', step: 0 }).direction).toBe('back')
   })
 })
 

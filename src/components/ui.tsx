@@ -4,8 +4,8 @@ type ButtonVariant = 'primary' | 'secondary' | 'ghost'
 
 const buttonStyles: Record<ButtonVariant, string> = {
   primary: 'bg-brand-yellow text-brand-teal font-extrabold hover:brightness-95',
-  secondary: 'border-2 border-brand-teal text-brand-teal font-semibold bg-white',
-  ghost: 'text-brand-teal font-semibold underline underline-offset-4',
+  secondary: 'bg-brand-teal text-white font-bold hover:brightness-125',
+  ghost: 'bg-brand-green/15 text-brand-teal font-bold hover:bg-brand-green/25',
 }
 
 export function Button({
@@ -16,7 +16,7 @@ export function Button({
   return (
     <button
       type="button"
-      className={`min-h-14 w-full rounded-xl px-5 text-lg transition disabled:cursor-not-allowed disabled:opacity-40 ${buttonStyles[variant]} ${className}`}
+      className={`min-h-14 w-full rounded-xl px-5 text-lg transition duration-150 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 ${buttonStyles[variant]} ${className}`}
       {...props}
     />
   )
@@ -65,7 +65,21 @@ export function Notice({ tone = 'info', children }: { tone?: 'info' | 'warn' | '
     warn: 'border-brand-yellow bg-brand-yellow/20',
     good: 'border-brand-green/40 bg-brand-green/10',
   }
-  return <div className={`rounded-xl border-2 p-4 text-[15px] leading-relaxed ${tones[tone]}`}>{children}</div>
+  return <div className={`animate-fade-up rounded-xl border-2 p-4 text-[15px] leading-relaxed ${tones[tone]}`}>{children}</div>
+}
+
+/** Radio circle: empty ring when not selected, filled green with a check when selected. */
+export function RadioDot({ selected, muted = false }: { selected: boolean; muted?: boolean }) {
+  return (
+    <span
+      aria-hidden
+      className={`flex size-7 shrink-0 items-center justify-center rounded-full border-2 text-sm leading-none font-extrabold text-white transition-all duration-200 ${
+        selected ? 'border-brand-green bg-brand-green' : muted ? 'border-brand-teal/20' : 'border-brand-teal/50'
+      }`}
+    >
+      <span className={`transition-transform duration-200 ${selected ? 'scale-100' : 'scale-0'}`}>✓</span>
+    </span>
+  )
 }
 
 /** Big tappable option, used like a radio button. */
@@ -89,22 +103,28 @@ export function ChoiceCard({
       aria-checked={selected}
       disabled={disabled}
       onClick={onClick}
-      className={`block min-h-14 w-full rounded-xl border-2 p-4 text-left transition disabled:cursor-not-allowed disabled:opacity-50 ${
+      className={`flex min-h-14 w-full items-start gap-3 rounded-xl border-2 p-4 text-left transition duration-150 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 ${
         selected ? 'border-brand-green bg-brand-green/10' : 'border-line bg-white'
       }`}
     >
-      <span className="block font-extrabold">{title}</span>
-      {children && <span className="mt-1 block text-[15px] leading-snug text-brand-teal/80">{children}</span>}
+      <RadioDot selected={selected} muted={disabled} />
+      <span className="min-w-0 flex-1">
+        <span className="block font-extrabold">{title}</span>
+        {children && <span className="mt-1 block text-[15px] leading-snug text-brand-teal/80">{children}</span>}
+      </span>
     </button>
   )
 }
 
-export function Chip({ onClick, children }: { onClick: () => void; children: ReactNode }) {
+export function Chip({ onClick, selected = false, children }: { onClick: () => void; selected?: boolean; children: ReactNode }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="min-h-11 rounded-full border-2 border-line bg-white px-4 text-[15px] font-semibold active:bg-brand-yellow/30"
+      aria-pressed={selected}
+      className={`min-h-11 rounded-full border-2 border-brand-yellow px-4 text-[15px] font-semibold transition duration-150 active:scale-95 ${
+        selected ? 'bg-brand-yellow' : 'bg-brand-yellow/15'
+      }`}
     >
       {children}
     </button>

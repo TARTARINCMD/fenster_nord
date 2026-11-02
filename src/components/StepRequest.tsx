@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { SLOTS, dayFormat, isoToDate, longDayFormat, nextWeekdays, toIso } from '../lib/dates'
 import { Shell } from './Shell'
 import type { StepProps } from './types'
-import { Chip, Field, Notice, StepTitle, TextInput } from './ui'
+import { Chip, Field, Notice, RadioDot, StepTitle, TextInput } from './ui'
 
 export function StepRequest({ state, dispatch }: StepProps) {
   const { contact, mode, appointment } = state
@@ -65,11 +65,12 @@ export function StepRequest({ state, dispatch }: StepProps) {
                 role="radio"
                 aria-checked={mode === value}
                 onClick={() => dispatch({ type: 'patch', patch: { mode: value } })}
-                className={`min-h-14 rounded-xl border-2 px-3 font-semibold ${
+                className={`flex min-h-14 items-center gap-2 rounded-xl border-2 px-3 text-left font-semibold ${
                   mode === value ? 'border-brand-green bg-brand-green/10' : 'border-line bg-white'
                 }`}
               >
-                {label}
+                <RadioDot selected={mode === value} />
+                <span>{label}</span>
               </button>
             ))}
           </div>
@@ -89,13 +90,12 @@ export function StepRequest({ state, dispatch }: StepProps) {
                   return (
                     <Chip
                       key={iso}
+                      selected={appointment?.date === iso}
                       onClick={() =>
                         dispatch({ type: 'patch', patch: { appointment: { date: iso, slot: appointment?.slot ?? '' } } })
                       }
                     >
-                      <span className={appointment?.date === iso ? 'underline decoration-brand-green decoration-4 underline-offset-4' : ''}>
-                        {dayFormat.format(d)}
-                      </span>
+                      {dayFormat.format(d)}
                     </Chip>
                   )
                 })}
@@ -107,13 +107,12 @@ export function StepRequest({ state, dispatch }: StepProps) {
                 {SLOTS.map((slot) => (
                   <Chip
                     key={slot}
+                    selected={appointment?.slot === slot}
                     onClick={() =>
                       dispatch({ type: 'patch', patch: { appointment: { date: appointment?.date ?? '', slot } } })
                     }
                   >
-                    <span className={appointment?.slot === slot ? 'underline decoration-brand-green decoration-4 underline-offset-4' : ''}>
-                      {slot}
-                    </span>
+                    {slot}
                   </Chip>
                 ))}
               </div>

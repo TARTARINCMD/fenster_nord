@@ -1,7 +1,7 @@
 import { createDraft, type WindowDraft } from './lib/drafts'
 
-/** 1 Ort, 2 Fenster, 3 System, 4 Preis, 5 Anfrage, 6 Zusammenfassung */
-export type Step = 1 | 2 | 3 | 4 | 5 | 6
+/** 0 Startseite, 1 Ort, 2 Fenster, 3 System, 4 Preis, 5 Anfrage, 6 Zusammenfassung */
+export type Step = 0 | 1 | 2 | 3 | 4 | 5 | 6
 
 export interface Contact {
   name: string
@@ -20,6 +20,8 @@ export type RequestMode = 'request' | 'appointment'
 
 export interface AppState {
   step: Step
+  /** Direction of the last step change, used for the slide animation */
+  direction: 'forward' | 'back'
   postcode: string
   /** 0 = Erdgeschoss ... 3 = 3. OG oder höher. Null until chosen. */
   floor: number | null
@@ -34,7 +36,7 @@ export interface AppState {
 export type Action =
   | { type: 'patch'; patch: Partial<AppState> }
   | { type: 'go'; step: Step }
-  | { type: 'addWindow'; copyLast: boolean }
+  | { type: 'addWindow' }
   | { type: 'updateWindow'; id: string; patch: Partial<WindowDraft> }
   | { type: 'removeWindow'; id: string }
   | { type: 'reset' }
@@ -42,7 +44,8 @@ export type Action =
 export function initialState(): AppState {
   const first = createDraft()
   return {
-    step: 1,
+    step: 0,
+    direction: 'forward',
     postcode: '',
     floor: null,
     windows: [first],
@@ -59,13 +62,9 @@ export function reducer(state: AppState, action: Action): AppState {
     case 'patch':
       return { ...state, ...action.patch }
     case 'go':
-      return { ...state, step: action.step }
+      return { ...state, step: action.step, direction: action.step >= state.step ? 'forward' : 'back' }
     case 'addWindow': {
-      const last = state.windows[state.windows.length - 1]
-      const draft =
-        action.copyLast && last
-          ? createDraft({ ...last, id: undefined })
-          : createDraft()
+      const draft = createDraft()
       return { ...state, windows: [...state.windows, draft], expandedId: draft.id }
     }
     case 'updateWindow':

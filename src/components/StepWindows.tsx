@@ -1,11 +1,5 @@
 import { useState } from 'react'
-import {
-  MAX_QUANTITY,
-  isDraftValid,
-  parseCm,
-  windowErrors,
-  type WindowDraft,
-} from '../lib/drafts'
+import { MAX_QUANTITY, isDraftValid, windowErrors, type WindowDraft } from '../lib/drafts'
 import { OPENING_LABEL, formatEUR, withVat } from '../lib/format'
 import { RULES, type Opening } from '../lib/pricing'
 import { Shell } from './Shell'
@@ -56,7 +50,7 @@ function WindowCard({ draft, index, expanded, attempted, canRemove, onToggle, on
             <p className="text-[15px] text-brand-teal/80">{summary(draft)}</p>
             {!valid && <p className="mt-1 text-sm font-semibold text-red-700">Bitte vervollständigen Sie dieses Fenster.</p>}
           </div>
-          <button type="button" onClick={onToggle} className="min-h-11 shrink-0 px-2 font-semibold underline underline-offset-4">
+          <button type="button" onClick={onToggle} className="min-h-11 shrink-0 rounded-lg bg-brand-green/15 px-4 font-bold">
             Bearbeiten
           </button>
         </div>
@@ -65,7 +59,7 @@ function WindowCard({ draft, index, expanded, attempted, canRemove, onToggle, on
   }
 
   return (
-    <div className="space-y-5 rounded-2xl border-2 border-brand-green p-4">
+    <div className="animate-fade-up space-y-5 rounded-2xl border-2 border-brand-green p-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-extrabold">Fenster {index + 1}</h2>
         {canRemove && (
@@ -120,7 +114,7 @@ function WindowCard({ draft, index, expanded, attempted, canRemove, onToggle, on
             aria-label="Eins weniger"
             disabled={draft.quantity <= 1}
             onClick={() => onChange({ quantity: draft.quantity - 1 })}
-            className="size-14 rounded-xl border-2 border-brand-teal text-2xl font-extrabold disabled:opacity-30"
+            className="size-14 rounded-xl bg-brand-teal text-2xl font-extrabold text-white transition duration-150 active:scale-95 disabled:opacity-30"
           >
             −
           </button>
@@ -132,7 +126,7 @@ function WindowCard({ draft, index, expanded, attempted, canRemove, onToggle, on
             aria-label="Eins mehr"
             disabled={draft.quantity >= MAX_QUANTITY}
             onClick={() => onChange({ quantity: draft.quantity + 1 })}
-            className="size-14 rounded-xl border-2 border-brand-teal text-2xl font-extrabold disabled:opacity-30"
+            className="size-14 rounded-xl bg-brand-teal text-2xl font-extrabold text-white transition duration-150 active:scale-95 disabled:opacity-30"
           >
             +
           </button>
@@ -184,12 +178,9 @@ export function StepWindows({ state, dispatch }: StepProps) {
     dispatch({ type: 'go', step: 3 })
   }
 
-  const last = state.windows[state.windows.length - 1]
-  const lastSize = last && parseCm(last.widthCm) && parseCm(last.heightCm) ? `${last.widthCm} × ${last.heightCm} cm` : null
-
   return (
     <Shell step={2} onBack={() => dispatch({ type: 'go', step: 1 })} primary={{ label: 'Weiter zur Systemwahl', onClick: next }}>
-      <StepTitle title="Ihre Fenster" subtitle="Geben Sie jedes Fenster einmal an. Gleiche Fenster fassen Sie mit der Menge zusammen." />
+      <StepTitle title="Ihre Fenster" subtitle="Geben Sie jede Fenstergröße einmal an. Gleiche Fenster fassen Sie mit der Menge zusammen." />
       <div className="space-y-3">
         {state.windows.map((w, i) => (
           <WindowCard
@@ -206,14 +197,9 @@ export function StepWindows({ state, dispatch }: StepProps) {
         ))}
       </div>
       <div className="mt-4 space-y-2">
-        <Button variant="secondary" onClick={() => dispatch({ type: 'addWindow', copyLast: false })}>
-          + Weiteres Fenster
+        <Button variant="secondary" onClick={() => dispatch({ type: 'addWindow' })}>
+          + Weiteres Fenster mit anderen Maßen
         </Button>
-        {lastSize && (
-          <Button variant="ghost" onClick={() => dispatch({ type: 'addWindow', copyLast: true })}>
-            Wie Fenster {state.windows.length} ({lastSize}) noch einmal hinzufügen
-          </Button>
-        )}
       </div>
     </Shell>
   )

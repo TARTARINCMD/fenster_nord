@@ -14,11 +14,12 @@ export function StepLocation({ state, dispatch }: StepProps) {
   return (
     <Shell
       step={1}
+      onBack={() => dispatch({ type: 'go', step: 0 })}
       primary={{ label: 'Weiter', disabled: !canContinue, onClick: () => dispatch({ type: 'go', step: 2 }) }}
     >
       <StepTitle
-        title="Neue Fenster in wenigen Minuten"
-        subtitle="Sie erhalten einen unverbindlichen Richtpreis und können danach ein kostenloses Aufmaß vor Ort anfragen. Zuerst: Wo sollen die Fenster eingebaut werden?"
+        title="Wo sollen die Fenster eingebaut werden?"
+        subtitle="Damit wir wissen, ob wir bei Ihnen montieren und ob ein Gerüst nötig sein könnte."
       />
       <div className="space-y-6">
         <Field label="Postleitzahl" error={state.postcode.length === 5 && status === 'invalid' ? 'Bitte geben Sie eine gültige 5-stellige Postleitzahl ein.' : undefined}>
