@@ -16,13 +16,23 @@ interface ShellProps {
   headerAction?: ReactNode
   primary?: { label: string; onClick: () => void; disabled?: boolean }
   footerExtra?: ReactNode
+  /** Content width from 768 px up. Phones always use the full column (max-w-md). */
+  width?: 'form' | 'medium' | 'wide'
   children: ReactNode
 }
 
-export function Shell({ step, onBack, onLogo, onClose, headerTitle, headerAction, primary, footerExtra, children }: ShellProps) {
+/** Full class names, so Tailwind can see them. The footer uses the same width as the page surface. */
+const WIDTH: Record<NonNullable<ShellProps['width']>, string> = {
+  form: 'max-w-md md:max-w-2xl',
+  medium: 'max-w-md md:max-w-3xl',
+  wide: 'max-w-md md:max-w-3xl lg:max-w-5xl',
+}
+
+export function Shell({ width = 'form', step, onBack, onLogo, onClose, headerTitle, headerAction, primary, footerExtra, children }: ShellProps) {
   return (
-    <div className="mx-auto flex min-h-dvh max-w-md flex-col">
-      <header className="sticky top-0 z-10 bg-white px-4 pt-3 pb-2">
+    <div className="min-h-dvh md:bg-gray-100">
+    <div className={`mx-auto flex min-h-dvh flex-col bg-white md:shadow-sm ${WIDTH[width]}`}>
+      <header className="sticky top-0 z-10 bg-white px-4 pt-3 pb-2 md:px-8 md:pt-5">
         <div className="flex h-10 items-center justify-between">
           {onClose ? (
             headerAction ?? <div className="size-12" />
@@ -81,18 +91,21 @@ export function Shell({ step, onBack, onLogo, onClose, headerTitle, headerAction
         )}
       </header>
 
-      <main className={`flex-1 px-4 pt-4 ${primary ? 'pb-36' : 'pb-24'}`}>{children}</main>
+      <main className={`flex-1 px-4 pt-4 md:px-8 md:pt-6 ${primary ? 'pb-36' : 'pb-24'}`}>{children}</main>
 
       {primary && (
-        <footer className="fixed inset-x-0 bottom-0 z-10 bg-white before:pointer-events-none before:absolute before:inset-x-0 before:-top-8 before:h-8 before:bg-gradient-to-b before:from-transparent before:to-white before:content-['']">
-          <div className="mx-auto max-w-md space-y-2 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <footer className="fixed inset-x-0 bottom-0 z-10 bg-white md:bg-transparent md:before:hidden before:pointer-events-none before:absolute before:inset-x-0 before:-top-8 before:h-8 before:bg-gradient-to-b before:from-transparent before:to-white before:content-['']">
+          <div className={`mx-auto space-y-2 bg-white px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:border-t md:border-line md:px-8 ${WIDTH[width]}`}>
             {footerExtra}
-            <Button onClick={primary.onClick} disabled={primary.disabled}>
-              {primary.label}
-            </Button>
+            <div className="md:mx-auto md:w-80">
+              <Button onClick={primary.onClick} disabled={primary.disabled}>
+                {primary.label}
+              </Button>
+            </div>
           </div>
         </footer>
       )}
+    </div>
     </div>
   )
 }

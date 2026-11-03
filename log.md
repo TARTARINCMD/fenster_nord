@@ -103,6 +103,13 @@ Entry format:
 - **Honest status in README:** only test-writer has run. code-reviewer and ux-ui-designer are created, not yet used. The earlier review used the `/code-review` skill.
 - **Open, for the user:** (1) The summary title says "Anfrage verschickt!" although nothing is sent (the FAQ explains it). (2) The BEG FAQ shows a general funding sentence even when the chosen system has Uw > 0,95. CLAUDE.md says: BEG hint only for Uw ≤ 0,95. The sentence is general and promises nothing, but it is a conflict with the rule, not decided yet.
 
+### 2026-11-03: Responsive layout for tablet and desktop
+- **Decision:** Done by the `ux-ui-designer` agent. Phone (< 768 px) unchanged. From `md`: grey page, white content surface, width tiers (`form`, `medium`, `wide`) via a `width` prop on `Shell`. Header, progress bar, content and footer share one container. Landing steps/facts in a 2/4-column grid, system cards 2 columns, price and summary 2 columns at `lg`, window edit form 2 columns at `md`, chat as a centred panel with scrim. Flow, copy, pricing and funding wording untouched, nothing in `src/lib/`. Replaces the earlier "Not done: two-column layout on wide screens".
+- **Source:** User request ("Make the app responsive", desktop screenshot of step 3). Task PDF: phone is the target, desktop is a bonus.
+- **Verified:** Headless Chrome at 320, 375, 430, 768, 1024, 1280, 1440 px on all screens, no horizontal overflow. Build, lint (the `useCountUp` hook error in `StepPrice.tsx` is fixed too) and 308 tests are clean. **Not verified:** real phone/tablet, landscape, hover and focus states on desktop.
+- **Noted, not changed:** `GoodToKnow` text (`text-brand-teal/50` on white) probably below 4.5:1 contrast, not measured.
+- **Font:** `src/index.css` and `index.html` now use the system font stack, not Schibsted Grotesk (commit 57fadbd "UI and Readme reworked", by the user). CLAUDE.md, the typeface entry and the README still say Schibsted Grotesk. To be decided by the user.
+
 ---
 
 ## Steps
@@ -261,6 +268,11 @@ Entry format:
 - **What the AI said:** In the new rounding test (3 windows 1111 × 1111 mm) the `test-writer` subagent wrote VAT 397,57 by hand.
 - **How noticed:** The test failed on the first run. Hand check: correct VAT is 397,61 (gross 2.490,28).
 - **Change:** Expected values corrected in the test, production code was right.
+
+### 2026-11-03: Grid items overflowed the screen at 320 px
+- **What the AI said:** The `ux-ui-designer` first built the system list as `grid gap-3`, with no explicit column.
+- **How noticed:** On a 320 px screenshot the cards touched the right edge and the radio dots were cut off. The page-level overflow check did not see it, because `overflow-x: clip` hides it.
+- **Change:** `grid-cols-1`, then checked per element at all widths. Lesson: the clip rule hides real overflow, check elements, not only the page.
 
 ---
 

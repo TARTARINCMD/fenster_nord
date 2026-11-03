@@ -45,13 +45,15 @@ export function StepSummary({ state, dispatch }: StepProps) {
   const hint = begHint(product)
 
   return (
-    <Shell onLogo={() => dispatch({ type: 'reset' })}>
+    <Shell width="wide" onLogo={() => dispatch({ type: 'reset' })}>
       <StepTitle
         title={mode === 'appointment' ? 'Terminwunsch geschickt!' : 'Anfrage verschickt!'}
         subtitle={mode === 'appointment' ? 'Ihr Wunschtermin wurde vorgemerkt.' : 'Wir melden uns in Kürze bei Ihnen.'}
       />
 
-      <section className="mt-5 space-y-1 rounded-2xl border-2 border-line p-4">
+      <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-10">
+      <div>
+      <section className="mt-5 space-y-1 rounded-2xl border-2 border-line p-4 lg:mt-0">
         <h2 className="font-extrabold text-brand-teal">Kontakt</h2>
         <p>{contact.name}</p>
         {contact.phone && <p>Telefon: {contact.phone}</p>}
@@ -87,7 +89,9 @@ export function StepSummary({ state, dispatch }: StepProps) {
         ))}
       </div>
 
-      <section className="mt-12">
+      </div>
+
+      <section className="mt-12 lg:mt-0">
         <h2 className="mb-4 text-[1.75rem] font-extrabold text-brand-teal">FAQ</h2>
         <div className="space-y-2">
           <FaqItem question="Wurde meine Anfrage wirklich verschickt?">
@@ -123,8 +127,9 @@ export function StepSummary({ state, dispatch }: StepProps) {
           </FaqItem>
         </div>
       </section>
+      </div>
 
-      <div className="mt-6">
+      <div className="mt-6 lg:mx-auto lg:max-w-sm">
         <Button variant="secondary" onClick={() => window.dispatchEvent(new Event('open-chat'))}>
           Im Chat fragen 💬
         </Button>

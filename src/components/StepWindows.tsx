@@ -37,8 +37,8 @@ function WindowForm({
   const errors = windowErrors(draft, attempted)
 
   return (
-    <div className="space-y-5 pt-2">
-
+    <div className="space-y-5 pt-2 md:grid md:grid-cols-2 md:items-start md:gap-8 md:space-y-0">
+      <div className="space-y-5">
       <div>
         <p className="mb-1 font-semibold">Wie groß ist das Fenster?</p>
         <p className="mb-3 text-sm text-brand-teal/70">
@@ -103,6 +103,9 @@ function WindowForm({
         </div>
       </div>
 
+      </div>
+
+      <div className="space-y-5">
       <fieldset>
         <legend className="mb-2 font-semibold">Wie soll sich das Fenster öffnen?</legend>
         <div className="space-y-2">
@@ -122,6 +125,7 @@ function WindowForm({
         <ToggleRow checked={draft.sill} onChange={(sill) => onChange({ sill })} title="Fensterbank innen">
           {formatEUR(withVat(RULES.sillPerMeter))} je Meter inkl. USt. Wir rechnen mit der Fensterbreite, die genaue Länge klären wir beim Aufmaß.
         </ToggleRow>
+      </div>
       </div>
     </div>
   )
@@ -154,6 +158,7 @@ export function StepWindows({ state, dispatch }: StepProps) {
     const valid = isDraftValid(openWindow)
     return (
       <Shell
+        width="medium"
         onClose={close}
         headerTitle={`Fenster ${openIndex + 1}`}
         headerAction={state.windows.length > 1 ? (
@@ -178,7 +183,7 @@ export function StepWindows({ state, dispatch }: StepProps) {
   }
 
   return (
-    <Shell step={2} onBack={() => dispatch({ type: 'go', step: 1 })} primary={{ label: 'Weiter zur Systemwahl', onClick: next }}>
+    <Shell width="medium" step={2} onBack={() => dispatch({ type: 'go', step: 1 })} primary={{ label: 'Weiter zur Systemwahl', onClick: next }}>
       <StepTitle title="Ihre Fenster" subtitle="Geben Sie jede Fenstergröße einmal an. Gleiche Fenster fassen Sie mit der Menge zusammen." />
 
       <div className="space-y-4">

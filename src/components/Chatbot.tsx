@@ -47,7 +47,8 @@ export function Chatbot() {
   }
 
   return (
-    <div role="dialog" aria-modal="true" aria-label="Demo-Assistent" className="fixed inset-0 z-30 flex animate-slide-up flex-col bg-white sm:mx-auto sm:max-w-md">
+    <div className="fixed inset-0 z-30 flex justify-center md:items-center md:bg-brand-teal/50 md:p-6">
+    <div role="dialog" aria-modal="true" aria-label="Demo-Assistent" className="flex h-full w-full animate-slide-up flex-col overflow-hidden bg-white md:h-[40rem] md:max-h-full md:max-w-lg md:rounded-3xl md:shadow-xl">
       <div className="flex items-center justify-between bg-brand-teal px-4 py-3 text-white">
         <p className="font-extrabold">Assistent von Fenster Nord</p>
         <button type="button" onClick={() => setOpen(false)} className="-mr-2 flex size-12 items-center justify-center rounded-lg text-3xl opacity-60 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-brand-teal" aria-label="Chat schließen">
@@ -91,6 +92,7 @@ export function Chatbot() {
           </button>
         </form>
       </div>
+    </div>
     </div>
   )
 }

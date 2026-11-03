@@ -104,6 +104,9 @@ export function StepPrice({ state, dispatch }: StepProps) {
   const result =
     items && product ? calculateQuote({ product, windows: items, postcode: state.postcode, floor: state.floor ?? 0 }) : null
 
+  // Hooks must run on every render, so this sits before the early return.
+  const animatedGross = useCountUp(result && result.available ? result.gross : 0)
+
   if (!result || !result.available || !product) {
     return (
       <Shell step={4} onBack={() => dispatch({ type: 'go', step: 3 })}>
@@ -112,16 +115,16 @@ export function StepPrice({ state, dispatch }: StepProps) {
     )
   }
 
-  const animatedGross = useCountUp(result.gross)
-
   return (
     <Shell
+      width="wide"
       step={4}
       onBack={() => dispatch({ type: 'go', step: 3 })}
       primary={{ label: 'Kostenloses Aufmaß anfragen', onClick: () => dispatch({ type: 'go', step: 5 }) }}
     >
       <StepTitle title="Ihr Richtpreis" />
-      <div className="rounded-2xl bg-brand-teal p-5 text-white">
+      <div className="lg:grid lg:grid-cols-2 lg:grid-rows-[auto_auto_1fr] lg:gap-x-10 lg:gap-y-4">
+      <div className="rounded-2xl bg-brand-teal p-5 text-white lg:col-start-1">
         <p className="text-sm font-semibold uppercase tracking-wide text-brand-yellow">Unverbindlicher Richtpreis</p>
         <p className="mt-1 text-[2.5rem] font-extrabold leading-tight">{formatEUR(animatedGross)}</p>
         <p className="mt-1 text-[0.9375rem]">
@@ -132,21 +135,22 @@ export function StepPrice({ state, dispatch }: StepProps) {
         </p>
       </div>
 
-      <details className="mt-5 rounded-xl bg-gray-100 p-4" open>
-        <summary className="min-h-11 cursor-pointer font-extrabold">So setzt sich der Preis zusammen</summary>
+      <section className="mt-5 rounded-xl bg-gray-100 p-4 lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:mt-0">
+        <h2 className="font-extrabold">So setzt sich der Preis zusammen</h2>
         <div className="mt-2">
           <Breakdown quote={result} pricePerM2={product.pricePerM2} />
         </div>
-      </details>
+      </section>
 
-      <div className="mt-4">
+      <div className="mt-4 lg:col-start-1 lg:mt-0">
         <GoodToKnow />
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4 lg:col-start-1 lg:mt-0 lg:self-start">
         <Button variant="ghost" onClick={() => dispatch({ type: 'go', step: 2 })}>
           Angaben ändern
         </Button>
+      </div>
       </div>
     </Shell>
   )

@@ -15,11 +15,12 @@ export function StepSystem({ state, dispatch }: StepProps) {
 
   return (
     <Shell
+      width="wide"
       step={3}
       onBack={() => dispatch({ type: 'go', step: 2 })}
       primary={{ label: 'Richtpreis anzeigen', disabled: !selected, onClick: () => dispatch({ type: 'go', step: 4 }) }}
     >
-      <div className="mb-6">
+      <div className="mb-6 md:max-w-3xl">
         <h1 className="text-[1.75rem] font-extrabold leading-tight">Welches Fenster passt zu Ihnen?</h1>
         <p className="mt-2 text-[1.0625rem] leading-relaxed text-brand-teal/80">
           Der Preis gilt für Ihre gesamte Bestellung mit diesem System, inklusive Montage und 19 % USt.
@@ -35,7 +36,7 @@ export function StepSystem({ state, dispatch }: StepProps) {
         </Notice>
       )}
 
-      <div role="radiogroup" className="mt-4 space-y-3">
+      <div role="radiogroup" className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
         {options.map(({ product: p, fits, reason, quote }) => (
           <ChoiceCard
             key={p.id}

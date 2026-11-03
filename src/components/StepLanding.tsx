@@ -106,24 +106,24 @@ export function StepLanding({ dispatch }: StepProps) {
 
 
       <div className="bg-gray-100">
-      <div className="mx-auto max-w-md px-4 pt-16 pb-16">
+      <div className="mx-auto max-w-md px-4 pt-16 pb-16 md:max-w-3xl md:px-8 md:pt-24 md:pb-24 lg:max-w-5xl">
         <section id="ablauf" className="scroll-mt-8">
           <Reveal>
             <h2 className="text-2xl font-extrabold">Der Ablauf</h2>
           </Reveal>
-          <ol ref={lineRef} className="relative mt-6 space-y-4">
+          <ol ref={lineRef} className="relative mt-6 space-y-4 md:grid md:grid-cols-2 md:gap-4 md:space-y-0 lg:grid-cols-4">
             {/* The line draws itself when the section comes into view. */}
             <div
               aria-hidden
-              className="absolute top-5 bottom-5 left-5 w-0.5 origin-top bg-brand-green/40 transition-transform duration-[1400ms] ease-out"
+              className="absolute top-5 bottom-5 left-5 w-0.5 origin-top md:hidden bg-brand-green/40 transition-transform duration-[1400ms] ease-out"
               style={{ transform: lineVisible ? 'scaleY(1)' : 'scaleY(0)' }}
             />
             {STEPS.map(([title, text], i) => (
-              <Reveal key={title} as="li" delay={i * 220} className="relative flex items-center gap-4">
+              <Reveal key={title} as="li" delay={i * 220} className="relative flex items-center gap-4 md:flex-col md:items-start">
                 <span className="relative z-[1] flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-green text-lg font-extrabold text-white">
                   {i + 1}
                 </span>
-                <span className="rounded-2xl bg-white px-4 py-3 shadow-sm">
+                <span className="rounded-2xl bg-white px-4 py-3 shadow-sm md:w-full md:flex-1">
                   <span className="block font-extrabold">{title}</span>
                   <span className="block text-[0.9375rem] text-brand-teal/80">{text}</span>
                 </span>
@@ -132,11 +132,11 @@ export function StepLanding({ dispatch }: StepProps) {
           </ol>
         </section>
 
-        <section className="mt-16">
+        <section className="mt-16 md:mt-24">
           <Reveal>
             <h2 className="text-2xl font-extrabold">Das sollten Sie wissen</h2>
           </Reveal>
-          <ul className="mt-6 space-y-3">
+          <ul className="mt-6 space-y-3 md:grid md:grid-cols-2 md:gap-4 md:space-y-0 lg:grid-cols-4">
             {FACTS.map(([title, text], i) => (
               <Reveal
                 key={title}
@@ -151,7 +151,7 @@ export function StepLanding({ dispatch }: StepProps) {
           </ul>
         </section>
 
-        <Reveal className="mt-12">
+        <Reveal className="mt-12 md:mx-auto md:mt-16 md:max-w-sm">
           <Button onClick={() => dispatch({ type: 'go', step: 1 })}>Richtpreis berechnen</Button>
         </Reveal>
       </div>
