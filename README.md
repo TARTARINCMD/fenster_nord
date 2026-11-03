@@ -16,8 +16,6 @@ Die sieben größten Lücken habe ich Fenster Nord per Mail gefragt. Die Antwort
 - **Maße:** Der Kunde gibt das Maß des alten Fensters ein (in cm, intern mm), wird beim Aufmaß geprüft.
 - **Nicht bepreist, nur Hinweis:** Zwei-Mann-Montage (> 3,0 m²), Gerüst ab 2. OG, Anfahrt außerhalb PLZ 20000–25999 (dort kein Preis, nur Hinweis).
 
-Meine eigenen, noch **nicht bestätigten** Annahmen: ein System für den ganzen Auftrag (vereinfacht), Fensterbanklänge = Fensterbreite, Rollladen auch bei Festverglasung erlaubt (die Unterlagen schließen es nicht aus). Typische Maße, Terminvorschläge und der Chatbot (feste Antworten, kein KI-Modell) sind eigene Zusätze und als Vorschau gekennzeichnet.
-
 ## Design-Annahmen
 
 Die Aufgabe lässt Aussehen, Fragen und Reihenfolge offen und nennt Laien am Handy als Zielgruppe. Meine Entscheidungen:
