@@ -40,7 +40,7 @@ Die Aufgabe lässt Aussehen, Fragen und Reihenfolge offen und nennt Laien am Han
 6. **Maße:** Außenmaß Blendrahmen in mm in der CSV, Beispiel in cm, Laien kennen nur ihr altes Fenster. Die CSV mischt Formate („1,0“ und „0,90“), Semikolon, Dezimalkomma.
 7. **„Interne Arbeitsunterlage“:** Das BEG-Verkaufsargument ist nicht für Kunden gedacht.
 
-## Wo die KI falsch lag
+## Wo Claude falsch lag
 
 - **BEG-Grenze** zuerst aus dem Gedächtnis genannt, die erste Quelle war eine veraltete Fassung von 2023. Per Suche geprüft, gilt die Richtlinie vom 17.07.2026.
 - **„Antrag vor Vertragsabschluss“** stand in einem Entwurf. Die Richtlinie sagt: vor Vorhabenbeginn, mit auflösend bedingtem Vertrag (Nr. 9.2.1). Beim Gegenlesen des Richtlinientexts gemerkt.
@@ -60,7 +60,3 @@ Drei Subagents liegen in `.claude/agents/` (je eine Markdown-Datei mit Rolle, er
 - **ux-ui-designer** prüft Mobile-Bedienung und Optik und darf die Oberfläche ändern. Nicht ohne Rückfrage: Preislogik, Fragenablauf, rechtlich relevante Texte, Markenfarben und Schrift.
 
 Die Grenzen stehen im Text der Agents, technisch erzwungen werden nur die Werkzeuge (der Reviewer hat kein Edit/Write). Eingesetzt wurde bisher nur der test-writer. Das Code-Review davor lief über den Skill `/code-review`, der Reviewer-Agent und der UX-Agent sind angelegt, aber noch nicht gelaufen.
-
-## Nicht geprüft
-
-Echtes Handy (bisher nur Headless-Chrome mit Touch-Emulation), Kontrast aller Farbkombinationen. Die Schrift wird von Google Fonts geladen, aus Datenschutzsicht (DSGVO) besser selbst hosten.
