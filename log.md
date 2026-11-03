@@ -116,6 +116,11 @@ Entry format:
 - **Done after asking the user (option A):** "Erst danach erhalten Sie einen verbindlichen Preis/Angebot" is not in the documents, so it was replaced in 6 places (landing, price notes, request, summary, chatbot answer and greeting) by wording from Preise-und-Produkte "Wichtig für Kunden": "Vor dem Auftrag kommt ein Mitarbeiter zum Aufmaß", the Aufmaß is free. No promise of a binding price or offer.
 - **Open, asked the user:** (a) removed, see above. (b) Hard-coded "19 %" and "0,95" in UI copy. (c) The BEG fallback sentence in the summary FAQ for systems above Uw 0,95. README still above one page, to be shortened.
 
+### 2026-11-03: Final checks before submission
+- **Decision:** (1) The BEG question in the summary FAQ keeps its general sentence for systems above Uw 0,95 (user: keep it). It names the limit, promises nothing and gives no amount, but it is a known deviation from the CLAUDE.md rule "hint only for Uw ≤ 0,95". Be ready to explain it. (2) "Vor dem Auftrag kommt ein Mitarbeiter zum Aufmaß" replaces the binding-price wording, and the 19 % and 0,95 in the copy now come from `RULES.vatRate` and `BEG_UW_LIMIT`. (3) Tested on a real phone by the user, all good. (4) README: the user reads and shortens it themselves.
+- **Source:** CLAUDE.md hard rules, task PDF (README max. one page).
+- **State:** 309 tests, build and lint clean, `main` at `1655f00`, live bundle identical to a local build.
+
 ---
 
 ## Steps
@@ -199,6 +204,14 @@ Entry format:
 - **Source:** diff of uncommitted working-tree changes; `src/lib/chatbot.ts`, `src/lib/pricing.test.ts`, `src/state.ts`, deleted `src/lib/ui-logic.test.ts`.
 - **Fixed:** (1) Added `'rolläd'` stem so "Rolläden" (single-l + umlaut) reaches the shutter answer. (2) Created `src/state.test.ts` (15 tests) covering `reducer` cases `go`, `addWindow`, `updateWindow`, `removeWindow`, and `reset` — these had no coverage after `ui-logic.test.ts` was deleted. (3) Added `windowNet` assertion for stulp × qty=2 to `pricing.test.ts` to restore the coverage that was lost when fixture 2 switched from `windowNet` to `unitNet`.
 - **Result:** 308/308 passing (10 test files). See AI mistakes below for details of gaps 1 and 2.
+
+### 2026-11-03: Window form switched to full-screen edit
+- **Decision:** Replaced the bottom-sheet drawer on step 2 with a full-screen edit view. Tapping a window card navigates to a Shell screen with a × (close) on the left, the window title in the header, "Entfernen" in red on the right (only when >1 window), and a sticky "Fenster speichern" primary button. Step 2 now lands on the list view instead of auto-opening the first window. Shell gained `onClose`, `headerTitle`, `headerAction`, and `width` props to support this pattern.
+- **Why:** Bottom-sheet drag-to-close required non-passive touch listeners and still felt unreliable on desktop DevTools. Full-screen is the pattern users know from native apps and gives the keyboard room to open without covering content.
+
+### 2026-11-03: Window option icons added
+- **Decision:** `ChoiceCard` and `ToggleRow` gained an optional `icon?: ReactNode` prop. Five inline SVG icons added in `StepWindows.tsx`: realistic window with frame, sash, handle and hinges (Dreh-Kipp); window with padlock (Festverglasung); two panels with facing handles (Stulp); window with horizontal slats and pull cord (Rollladen); window above a wider protruding sill (Fensterbank). "Rollladen" label extended to "Rollladen (Jalousie)" so users who know the colloquial term recognise it.
+- **Why:** User research finding — homeowners without trade knowledge don't know what Stulp or Rollladen means. Icons give an instant visual anchor before they read the description.
 
 ### 2026-11-03: Summary page redesigned for the demo
 - **Decision:** (1) Title is now "Terminwunsch geschickt!" / "Anfrage verschickt!" with a mode-aware subtitle. (2) Removed the "Vorschau" warning notice — moved into the FAQ instead. (3) "Termin für das Aufmaß" renamed to **"Rückruftermin"**: the chosen slot is when the worker calls, not when they visit. (4) "Ort" section removed. (5) BEG notice removed from the main flow — it now lives in the FAQ under "Kann ich BEG-Förderung beantragen?" so the legal wording is still present but less prominent. (6) "So geht es weiter" bullet list replaced by a **FAQ accordion** (8 items: demo notice, next steps, delivery, Uw explained, BEG, colors, what's excluded, montage prep). (7) "Angaben ändern" and "Neu starten" buttons removed for the demo. (8) Single "Im Chat fragen" button at the bottom; floating chatbot button removed globally. (9) Logo tappable → dispatches `reset` → home (step 1).
@@ -304,14 +317,3 @@ Status of the code: pushed to https://github.com/TARTARINCMD/fenster_nord (`main
 5. The order of the price rules is not stated (minimum area, fixed discount, Stulp, volume discount). Customer confirmed ours.
 6. Dimensions: outer frame size in mm in the CSV, cm in the PDF example, customers only know the old window. The CSV also mixes number formats ("1,0" and "0,90"), uses semicolons and decimal commas.
 7. The price sheet is marked "interne Arbeitsunterlage", so the BEG sales argument isn't meant for customers.
-
-**AI mistakes for the README:** see the section above. Keep it honest and specific: 2 from before the build (BEG source, "vor Vertragsabschluss"), then the window copy id, chatbot keyword matching, "0,9" instead of "0,90", tabular numerals, the wrongly blamed image behind the sideways scroll.
-
-**Not verified yet:**
-- A real phone (so far only headless Chrome with touch emulation, at 320, 360, 390, 430, 768 and 1280 px).
-- The feel of the animations (only screenshots so far).
-- Contrast of every text and color combination (yellow with white text is avoided by rule, nothing measured).
-
-**Open question, privacy:** The font is loaded from Google Fonts (fonts.googleapis.com). For a German site this can be a data-protection problem (German courts have ruled against embedding Google Fonts from Google's servers without consent). Option: self-host the font files (for example the `@fontsource` package) so no request goes to Google. Not decided yet, not verified legally.
-
-**Still to do:** test the live site on a real phone, README (one page, with the live link), mail to dinse@moovin.de and heymann@mvn.energy at the latest one working day before the interview.
