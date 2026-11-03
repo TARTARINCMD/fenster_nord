@@ -35,7 +35,7 @@ const topics: Topic[] = [
   {
     keywords: ['unverbindlich', 'verbindlich', 'festpreis', 'garantie', 'genau'],
     answer: () =>
-      'Der Preis hier ist ein unverbindlicher Richtpreis. Den genauen Preis erhalten Sie nach dem Aufmaß vor Ort.',
+      'Der Preis hier ist ein unverbindlicher Richtpreis. Vor dem Auftrag kommt ein Mitarbeiter zum kostenlosen Aufmaß vor Ort.',
   },
   {
     keywords: ['maler', 'streichen', 'anstrich'],
@@ -96,7 +96,7 @@ export const SUGGESTED_QUESTIONS = [
 ]
 
 export const CHAT_GREETING =
-  'Hallo! Ich bin der Demo-Assistent von Fenster Nord. Ich beantworte Fragen zu Aufmaß, Montage, Lieferzeit und Förderung. Verbindliche Preise nennt Ihnen ein Mitarbeiter nach dem Aufmaß.'
+  'Hallo! Ich bin der Demo-Assistent von Fenster Nord. Ich beantworte Fragen zu Aufmaß, Montage, Lieferzeit und Förderung. Der Preis hier ist unverbindlich, vor dem Auftrag kommt ein Mitarbeiter zum Aufmaß.'
 
 export function answerQuestion(question: string): string {
   const q = question.toLowerCase()

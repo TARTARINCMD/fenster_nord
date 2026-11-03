@@ -50,7 +50,7 @@ export function Field({
 export function TextInput({ invalid, className = '', ...props }: InputHTMLAttributes<HTMLInputElement> & { invalid?: boolean }) {
   return (
     <input
-      className={`h-14 w-full rounded-2xl bg-gray-100 px-4 text-base outline-none transition placeholder:text-gray-400 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-brand-green ${
+      className={`h-14 w-full rounded-2xl bg-gray-100 px-4 text-base outline-none transition placeholder:text-gray-500 focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-brand-green ${
         invalid ? 'ring-2 ring-red-500' : ''
       } ${className}`}
       aria-invalid={invalid || undefined}

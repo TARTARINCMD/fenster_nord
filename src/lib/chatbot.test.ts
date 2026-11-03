@@ -166,6 +166,6 @@ describe('chatbot never promises or invents', () => {
   })
 
   it('greets with a note that binding prices come after the measurement', () => {
-    expect(CHAT_GREETING).toContain('Verbindliche Preise nennt Ihnen ein Mitarbeiter nach dem Aufmaß')
+    expect(CHAT_GREETING).toContain('vor dem Auftrag kommt ein Mitarbeiter zum Aufmaß')
   })
 })

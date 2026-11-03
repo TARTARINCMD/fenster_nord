@@ -1,6 +1,7 @@
 import { toWindowItems } from '../lib/drafts'
 import { formatEUR, formatNumber } from '../lib/format'
 import { mayQualifyForBeg } from '../lib/funding'
+import { RULES } from '../lib/pricing'
 import { products } from '../lib/products'
 import { evaluateSystems } from '../lib/systems'
 import { Shell } from './Shell'
@@ -8,6 +9,7 @@ import type { StepProps } from './types'
 import { ChoiceCard, Notice } from './ui'
 
 export function StepSystem({ state, dispatch }: StepProps) {
+  const vatPercent = Math.round(RULES.vatRate * 100)
   const items = toWindowItems(state.windows)
   const options = items ? evaluateSystems(products, items, state.postcode, state.floor ?? 0) : []
   const selected = options.find((o) => o.product.id === state.productId && o.fits)
@@ -23,7 +25,7 @@ export function StepSystem({ state, dispatch }: StepProps) {
       <div className="mb-6 md:max-w-3xl">
         <h1 className="text-[1.75rem] font-extrabold leading-tight">Welches Fenster passt zu Ihnen?</h1>
         <p className="mt-2 text-[1.0625rem] leading-relaxed text-brand-teal/80">
-          Der Preis gilt für Ihre gesamte Bestellung mit diesem System, inklusive Montage und 19 % USt.
+          Der Preis gilt für Ihre gesamte Bestellung mit diesem System, inklusive Montage und {vatPercent} % USt.
         </p>
         <p className="mt-2 text-[1.0625rem] leading-relaxed text-brand-teal/80">
           Der Uw-Wert zeigt, wie viel Wärme das Fenster durchlässt: <strong>je kleiner, desto besser.</strong>
@@ -62,7 +64,7 @@ export function StepSystem({ state, dispatch }: StepProps) {
           </ChoiceCard>
         ))}
       </div>
-      <p className="mt-4 text-sm text-brand-teal/70">Alle Preise sind unverbindliche Richtpreise inklusive 19 % USt.</p>
+      <p className="mt-4 text-sm text-brand-teal/70">Alle Preise sind unverbindliche Richtpreise inklusive {vatPercent} % USt.</p>
     </Shell>
   )
 }

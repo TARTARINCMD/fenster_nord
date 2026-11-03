@@ -2,7 +2,7 @@
 
 Mobile-first Web-App: Hauseigentümer geben ihre Fenster an, sehen einen unverbindlichen Richtpreis mit Aufschlüsselung und können ein kostenloses Aufmaß anfragen (nur Zusammenfassung auf dem Bildschirm, es wird nichts verschickt).
 
-**Live:** https://fenster-nord.vercel.app/
+**Live:** https://fenster-nord.vercel.app/ · **Code:** https://github.com/TARTARINCMD/fenster_nord
 
 Vite + React + TypeScript + Tailwind, Vitest, kein Backend. Start: `npm run dev`, Tests: `npm test`. Alle Preisregeln stehen als reine Funktionen in `src/lib/`, die Produktdaten kommen nur aus `data/produktliste.csv`. Die Kundenunterlagen (`documents/`) liegen bewusst nicht im öffentlichen Repo.
 
@@ -26,7 +26,7 @@ Die Aufgabe lässt Aussehen, Fragen und Reihenfolge offen und nennt Laien am Han
 - **Wenig tippen:** typische Maße als Schnellauswahl, Menge per Plus/Minus, Fachbegriffe (Dreh-Kipp, Festverglasung, Stulp, Uw) in einem Satz erklärt, Maße in cm mit Hinweis „altes Fenster von außen messen“.
 - **Preis nachvollziehbar:** Brutto zuerst, darunter der Rechenweg je Fenster (Fläche × €/m², Mindestfläche, −15 %, +120 €), dann die Hinweise.
 - **Handy zuerst:** 375 px, 16 px Rand, Tippflächen ≥ 44 px, Auswahlkarten mit Radiopunkt, getestet von 320 bis 1280 px. Animationen entfallen bei „reduzierte Bewegung“.
-- **Optik:** mvn.energy-Farben und Logo, Schibsted Grotesk statt der mvn-Schrift (weniger Standard-Look). Risiko: Die App wirkt wie ein mvn-Produkt, Anbieter bleibt Fenster Nord.
+- **Optik:** mvn.energy-Farben und Logo, System-Schrift statt Webfont (schnell, und es geht keine Anfrage an Google Fonts). Zwischenzeitlich war es Schibsted Grotesk. Risiko: Die App wirkt wie ein mvn-Produkt, Anbieter bleibt Fenster Nord.
 - **Nichts wird gesendet:** Der Button „Anfrage absenden" und „Termin verbindlich buchen" lösen keinen Versand aus — die App hat kein Backend. Am Ende erscheint nur eine Zusammenfassung auf dem Bildschirm, ein Eintrag in den Fragen am Ende sagt das offen („Wurde meine Anfrage wirklich verschickt?“ – nein, Demo). Gleiches gilt für den Chatbot (feste Antworten, kein KI-Modell).
 - **„Rückruftermin“ statt „Aufmaß-Termin“:** Der gewählte Zeitraum ist der Anruf, bei dem das Aufmaß vereinbart wird, nicht der Besuch. Alles Weitere (Lieferzeit, Uw, BEG, Farben, Vorbereitung) steht als aufklappbare Fragen am Ende statt als Textwand.
 
@@ -45,7 +45,7 @@ Die Aufgabe lässt Aussehen, Fragen und Reihenfolge offen und nennt Laien am Han
 - **BEG-Grenze** zuerst aus dem Gedächtnis genannt, die erste Quelle war eine veraltete Fassung von 2023. Per Suche geprüft, gilt die Richtlinie vom 17.07.2026.
 - **„Antrag vor Vertragsabschluss“** stand in einem Entwurf. Die Richtlinie sagt: vor Vorhabenbeginn, mit auflösend bedingtem Vertrag (Nr. 9.2.1). Beim Gegenlesen des Richtlinientexts gemerkt.
 - **Uw „0,9“ statt „0,90“:** Tests grün, aber im Screenshot sichtbar. Jetzt `toFixed(2)` mit Test.
-- **Tabellenziffern** (`tabular-nums`) empfohlen: In Schibsted Grotesk wird der Preis zu „1 . 923 , 28 €“. Nur im Screenshot aufgefallen, wieder entfernt.
+- **Tabellenziffern** (`tabular-nums`) empfohlen: In der damals genutzten Schrift (Schibsted Grotesk) wurde der Preis zu „1 . 923 , 28 €“. Nur im Screenshot aufgefallen, wieder entfernt.
 - **Chatbot-Schlagwörter** per `includes()`: „beg“ träfe „Baubeginn“. Beim Durchlesen vor dem ersten Lauf gefunden, jetzt Wortanfang bzw. ganzes Wort. Der Wortanfang-Ansatz verfehlte dann „unverbindlich“ und „Rollläden“/„Rolläden“. Das haben erst die Tests und ein Code-Review gezeigt.
 - **Leerer CSV-Wert wurde zu 0:** `Number('')` ist 0, eine leere Zelle wäre Preis 0 oder Uw 0 (besteht den BEG-Check) geworden. Ein Test schlug fehl, jetzt wirft der Parser.
 - **Tests weggefallen:** Beim Aufteilen der alten Testdatei blieb `state.ts` ohne Test, obwohl „alles abgedeckt“ gemeldet war. Das Review fand es, jetzt 308 Tests.
@@ -55,7 +55,7 @@ Die Aufgabe lässt Aussehen, Fragen und Reihenfolge offen und nennt Laien am Han
 
 Drei Subagents liegen in `.claude/agents/` (je eine Markdown-Datei mit Rolle, erlaubten Werkzeugen und Regeln aus `CLAUDE.md`):
 
-- **test-writer** schreibt Vitest-Tests für `src/lib/`. Er ändert nur Testdateien, erwartete Werte rechnet er aus den Unterlagen von Hand und kopiert sie nicht aus dem Code. Fehler im Code meldet er, er repariert sie nicht. Er schrieb die 293 Tests neu (mit beiden Fixtures) und fand drei Fehler im Code, die ich danach behoben habe. Eigener Fehler: Eine USt in einem Rundungstest hatte er falsch gerechnet, der Testlauf zeigte es.
+- **test-writer** schreibt Vitest-Tests für `src/lib/`. Er ändert nur Testdateien, erwartete Werte rechnet er aus den Unterlagen von Hand und kopiert sie nicht aus dem Code. Fehler im Code meldet er, er repariert sie nicht. Er schrieb die Tests neu (293, mit beiden Fixtures, heute 308 nach Ergänzungen) und fand drei Fehler im Code, die ich danach behoben habe. Eigener Fehler: Eine USt in einem Rundungstest hatte er falsch gerechnet, der Testlauf zeigte es.
 - **code-reviewer** liest nur und kann nichts ändern. Er prüft Änderungen gegen die Regeln in `CLAUDE.md` (Preislogik nur in `src/lib/`, BEG-Wortlaut, „unverbindlich“, keine erfundenen Preise), startet Tests, Lint und Build und gibt Befunde nach Schwere aus.
 - **ux-ui-designer** prüft Mobile-Bedienung und Optik und darf die Oberfläche ändern. Nicht ohne Rückfrage: Preislogik, Fragenablauf, rechtlich relevante Texte, Markenfarben und Schrift.
 

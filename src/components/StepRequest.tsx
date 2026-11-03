@@ -20,12 +20,12 @@ export function StepRequest({ state, dispatch }: StepProps) {
       step={5}
       onBack={() => dispatch({ type: 'go', step: 4 })}
       primary={{
-        label: mode === 'appointment' ? 'Termin verbindlich buchen' : 'Anfrage absenden',
+        label: mode === 'appointment' ? 'Terminwunsch absenden' : 'Anfrage absenden',
         disabled: !canSend,
         onClick: () => dispatch({ type: 'go', step: 6 }),
       }}
     >
-      <StepTitle title="Kostenloses Aufmaß" subtitle="Ein Mitarbeiter misst Ihre Fenster vor Ort aus. Erst danach erhalten Sie einen verbindlichen Preis." />
+      <StepTitle title="Kostenloses Aufmaß" subtitle="Ein Mitarbeiter misst Ihre Fenster vor Ort aus. Das Aufmaß ist kostenlos und findet vor dem Auftrag statt." />
 
       <div className="mt-6 space-y-5">
         <Field label="Ihr Name">
@@ -38,7 +38,7 @@ export function StepRequest({ state, dispatch }: StepProps) {
           label={
             <>
               E-Mail{' '}
-              <span className="font-normal text-brand-teal/60">(optional)</span>
+              <span className="font-normal text-brand-teal/70">(optional)</span>
             </>
           }
           error={!emailOk ? 'Bitte geben Sie eine gültige E-Mail-Adresse ein.' : undefined}

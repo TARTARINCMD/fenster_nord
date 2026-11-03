@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { isoToDate, longDayFormat } from '../lib/dates'
 import { toWindowItems } from '../lib/drafts'
 import { formatEUR } from '../lib/format'
-import { begHint } from '../lib/funding'
+import { begGeneralHint, begHint } from '../lib/funding'
 import { RULES, calculateQuote } from '../lib/pricing'
 import { products } from '../lib/products'
 import { Shell } from './Shell'
@@ -47,8 +47,8 @@ export function StepSummary({ state, dispatch }: StepProps) {
   return (
     <Shell width="wide" onLogo={() => dispatch({ type: 'reset' })}>
       <StepTitle
-        title={mode === 'appointment' ? 'Terminwunsch geschickt!' : 'Anfrage verschickt!'}
-        subtitle={mode === 'appointment' ? 'Ihr Wunschtermin wurde vorgemerkt.' : 'Wir melden uns in Kürze bei Ihnen.'}
+        title={mode === 'appointment' ? 'Ihr Terminwunsch im Überblick' : 'Ihre Anfrage im Überblick'}
+        subtitle={mode === 'appointment' ? 'Demo: Es wurde nichts gesendet und kein Termin gebucht.' : 'Demo: Es wurde nichts gesendet.'}
       />
 
       <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-10">
@@ -99,7 +99,7 @@ export function StepSummary({ state, dispatch }: StepProps) {
           </FaqItem>
 
           <FaqItem question="Was passiert als Nächstes?">
-            Ein Mitarbeiter meldet sich bei Ihnen, um einen Termin für das kostenlose Aufmaß zu vereinbaren. Erst danach erhalten Sie ein verbindliches Angebot.
+            Ein Mitarbeiter meldet sich bei Ihnen, um einen Termin für das kostenlose Aufmaß zu vereinbaren. Das Aufmaß findet vor dem Auftrag statt.
           </FaqItem>
 
           <FaqItem question="Wie lange dauert die Lieferung?">
@@ -111,7 +111,7 @@ export function StepSummary({ state, dispatch }: StepProps) {
           </FaqItem>
 
           <FaqItem question="Kann ich BEG-Förderung beantragen?">
-            {hint ?? 'Fenster mit einem Uw-Wert von ≤ 0,95 W/(m²K) können die technischen Anforderungen der BEG-Förderung erfüllen. Eine Förderzusage ist das nicht: Der Antrag muss vor Vorhabenbeginn gestellt werden, und wir prüfen die Voraussetzungen beim Aufmaß.'}
+            {hint ?? begGeneralHint()}
           </FaqItem>
 
           <FaqItem question="Welche Farben und Dekore gibt es?">
@@ -133,7 +133,7 @@ export function StepSummary({ state, dispatch }: StepProps) {
         <Button variant="secondary" onClick={() => window.dispatchEvent(new Event('open-chat'))}>
           Im Chat fragen 💬
         </Button>
-        <p className="mt-4 text-center text-[0.9375rem] text-brand-teal/60">
+        <p className="mt-4 text-center text-[0.9375rem] text-brand-teal/70">
           Oder einfach anrufen:{' '}
           <a href="tel:+491111111111" className="font-semibold text-brand-teal underline-offset-2 hover:underline">
             +49 111 1111 111

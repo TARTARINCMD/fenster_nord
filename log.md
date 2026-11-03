@@ -110,6 +110,12 @@ Entry format:
 - **Noted, not changed:** `GoodToKnow` text (`text-brand-teal/50` on white) probably below 4.5:1 contrast, not measured.
 - **Font:** `src/index.css` and `index.html` now use the system font stack, not Schibsted Grotesk (commit 57fadbd "UI and Readme reworked", by the user). CLAUDE.md, the typeface entry and the README still say Schibsted Grotesk. To be decided by the user.
 
+### 2026-11-03: Review against the documents, copy and contrast fixes
+- **Decision:** Full check of code, README and repo against the task PDF, Preise-und-Produkte, Montagebedingungen and the CSV. Pricing logic and CSV match. Fixed: (1) docs now say the app uses the **system font stack** (README, CLAUDE.md), Schibsted Grotesk is history. (2) Button "Termin verbindlich buchen" → "Terminwunsch absenden", summary titles "Anfrage verschickt!" / "Terminwunsch geschickt!" → "Ihre Anfrage im Überblick" / "Ihr Terminwunsch im Überblick" with the subtitle "Demo: Es wurde nichts gesendet." (the app sends nothing, "verbindlich" contradicted "unverbindlich"). (3) Text contrast: the price notes (`/50`), "(optional)" and the hint under the summary (`/60`) now `/70`, error text red-700, placeholder gray-500. Icons and the decorative chevron/plus were left. (4) README: repo link added, test numbers made consistent (293 written, 308 today).
+- **Source:** Task PDF (README max. one page, link + code, summary on screen is enough), Preise-und-Produkte "Wichtig für Kunden" ("Ein Online-Preis ist immer unverbindlich"), CLAUDE.md hard rules. Contrast computed by hand (teal/50 on white 3,1:1, /60 4,2:1, /70 5,8:1, needs 4,5:1).
+- **Done after asking the user (option A):** "Erst danach erhalten Sie einen verbindlichen Preis/Angebot" is not in the documents, so it was replaced in 6 places (landing, price notes, request, summary, chatbot answer and greeting) by wording from Preise-und-Produkte "Wichtig für Kunden": "Vor dem Auftrag kommt ein Mitarbeiter zum Aufmaß", the Aufmaß is free. No promise of a binding price or offer.
+- **Open, asked the user:** (a) removed, see above. (b) Hard-coded "19 %" and "0,95" in UI copy. (c) The BEG fallback sentence in the summary FAQ for systems above Uw 0,95. README still above one page, to be shortened.
+
 ---
 
 ## Steps

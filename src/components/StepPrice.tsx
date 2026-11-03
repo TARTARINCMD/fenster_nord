@@ -88,8 +88,8 @@ export function Breakdown({ quote, pricePerM2 }: { quote: Quote; pricePerM2: num
 
 export function GoodToKnow() {
   return (
-    <ul className="list-disc space-y-2 pl-5 text-[0.9375rem] leading-relaxed text-brand-teal/50">
-      <li>Das Aufmaß vor Ort ist kostenlos. Erst danach gibt es einen verbindlichen Preis.</li>
+    <ul className="list-disc space-y-2 pl-5 text-[0.9375rem] leading-relaxed text-brand-teal/70">
+      <li>Das Aufmaß vor Ort ist kostenlos und findet vor dem Auftrag statt.</li>
       <li>Die Lieferzeit beträgt in der Regel 6 bis 8 Wochen ab Aufmaß.</li>
       <li>Weiß ist Standard. Andere Farben und Dekore gibt es auf Anfrage.</li>
       <li>Malerarbeiten sind nicht enthalten.</li>

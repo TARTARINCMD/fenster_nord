@@ -12,7 +12,7 @@ const STEPS = [
 
 const FACTS = [
   ['Unverbindlich und nachvollziehbar', 'Sie sehen jeden Posten, vom Fenster bis zur Montage.'],
-  ['Kostenloses Aufmaß vor Ort', 'Erst danach erhalten Sie einen verbindlichen Preis.'],
+  ['Kostenloses Aufmaß vor Ort', 'Vor dem Auftrag kommt ein Mitarbeiter zu Ihnen.'],
   ['Lieferzeit 6 bis 8 Wochen', 'In der Regel ab Aufmaß.'],
   ['Sechs Fenstersysteme', 'Aus Kunststoff, Holz, Holz-Aluminium und Aluminium.'],
 ]

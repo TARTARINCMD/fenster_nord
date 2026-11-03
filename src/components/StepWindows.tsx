@@ -242,7 +242,7 @@ export function StepWindows({ state, dispatch }: StepProps) {
             type="button"
             onClick={() => { dispatch({ type: 'removeWindow', id: openWindow.id }); close() }}
             aria-label={`Fenster ${openIndex + 1} entfernen`}
-            className="-ml-2 min-h-11 rounded-lg px-2 text-sm font-semibold text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2"
+            className="-ml-2 min-h-11 rounded-lg px-2 text-sm font-semibold text-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-700 focus-visible:ring-offset-2"
           >
             Entfernen
           </button>
@@ -277,7 +277,7 @@ export function StepWindows({ state, dispatch }: StepProps) {
                 <p className="font-extrabold">Fenster {i + 1}</p>
                 {valid
                   ? <p className="truncate text-[0.9375rem] text-brand-teal/70">{windowSummary(w)}</p>
-                  : attempted && <p className="text-[0.9375rem] text-red-400">Angaben unvollständig</p>
+                  : attempted && <p className="text-[0.9375rem] text-red-700">Angaben unvollständig</p>
                 }
               </div>
               <span aria-hidden className="shrink-0 text-xl text-brand-teal/40">›</span>

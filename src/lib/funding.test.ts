@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { BEG_UW_LIMIT, begHint, mayQualifyForBeg } from './funding'
+import { BEG_UW_LIMIT, begGeneralHint, begHint, mayQualifyForBeg } from './funding'
 import { products, type Product } from './products'
 
 const byId = (id: string): Product => {
@@ -88,5 +88,15 @@ describe('begHint', () => {
   it('contains no funding amount in euro or percent', () => {
     const hint = begHint(byId('FN-K82-3')) ?? ''
     expect(hint).not.toMatch(/€|EUR|%|Prozent/)
+  })
+})
+
+describe('begGeneralHint', () => {
+  it('names the limit from the rule, with comma, and promises nothing', () => {
+    const text = begGeneralHint()
+    expect(text).toContain('≤ 0,95 W/(m²K)')
+    expect(text).toContain('Eine Förderzusage ist das nicht')
+    expect(text).toContain('vor Vorhabenbeginn')
+    expect(text).not.toMatch(/€|%/)
   })
 })
