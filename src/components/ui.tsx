@@ -164,7 +164,7 @@ export function ToggleRow({
 export function StepTitle({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div className="mb-6">
-      <h1 className="text-[1.75rem] font-extrabold leading-tight">{title}</h1>
+      <h1 className="text-[1.75rem] font-extrabold leading-tight text-brand-teal">{title}</h1>
       {subtitle && <p className="mt-2 text-[1.0625rem] leading-relaxed text-brand-teal/80">{subtitle}</p>}
     </div>
   )

@@ -52,7 +52,7 @@ export function StepSummary({ state, dispatch }: StepProps) {
       />
 
       <section className="mt-5 space-y-1 rounded-2xl border-2 border-line p-4">
-        <h2 className="font-extrabold">Kontakt</h2>
+        <h2 className="font-extrabold text-brand-teal">Kontakt</h2>
         <p>{contact.name}</p>
         {contact.phone && <p>Telefon: {contact.phone}</p>}
         {contact.email && <p>E-Mail: {contact.email}</p>}
@@ -66,7 +66,7 @@ export function StepSummary({ state, dispatch }: StepProps) {
       </section>
 
       <section className="mt-3 rounded-2xl border-2 border-line p-4">
-        <h2 className="font-extrabold">Richtpreis (unverbindlich)</h2>
+        <h2 className="font-extrabold text-brand-teal">Richtpreis (unverbindlich)</h2>
         <p className="mt-1 text-[2rem] font-extrabold leading-tight">{formatEUR(result.gross)}</p>
         <p className="text-[0.9375rem] text-brand-teal/80">
           inkl. {Math.round(RULES.vatRate * 100)} % USt. · netto {formatEUR(result.net)} · {product.name}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useState } from 'react'
 import { MAX_QUANTITY, isDraftValid, windowErrors, type WindowDraft } from '../lib/drafts'
 import { OPENING_LABEL, formatEUR, withVat } from '../lib/format'
 import { RULES, type Opening } from '../lib/pricing'
@@ -25,121 +25,21 @@ function windowSummary(d: WindowDraft): string {
   return `${size} · ${d.quantity}× · ${OPENING_LABEL[d.opening]}${extras ? ` · ${extras}` : ''}`
 }
 
-function BottomSheet({ open, onClose, children }: { open: boolean; onClose: () => void; children: ReactNode }) {
-  const sheetRef = useRef<HTMLDivElement>(null)
-  const startY = useRef(0)
-  const dragging = useRef(false)
-  const [dragY, setDragY] = useState(0)
-  const [releasing, setReleasing] = useState(false)
-
-  useEffect(() => {
-    if (!open) return
-    setDragY(0)
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [open, onClose])
-
-  // Attach touchmove with passive:false so we can preventDefault and block scroll while dragging.
-  useEffect(() => {
-    const el = sheetRef.current
-    if (!el) return
-    const onMove = (e: TouchEvent) => {
-      if (!dragging.current) return
-      const delta = e.touches[0].clientY - startY.current
-      if (delta < 0) { dragging.current = false; return }
-      e.preventDefault()
-      setDragY(delta)
-    }
-    el.addEventListener('touchmove', onMove, { passive: false })
-    return () => el.removeEventListener('touchmove', onMove)
-  }, [open])
-
-  function handleTouchStart(e: React.TouchEvent<HTMLDivElement>) {
-    if (sheetRef.current && sheetRef.current.scrollTop > 2) return
-    startY.current = e.touches[0].clientY
-    dragging.current = true
-  }
-
-  function handleTouchEnd() {
-    if (!dragging.current) return
-    dragging.current = false
-    if (dragY > 80) {
-      onClose()
-      setDragY(0)
-    } else {
-      setReleasing(true)
-      setDragY(0)
-      setTimeout(() => setReleasing(false), 250)
-    }
-  }
-
-  if (!open) return null
-
-  return (
-    <>
-      <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm animate-[fade-in_0.2s_ease_both]" onClick={onClose} aria-hidden />
-      <div
-        ref={sheetRef}
-        role="dialog"
-        aria-modal="true"
-        className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-md animate-slide-up rounded-t-[2.5rem] bg-white"
-        style={{
-          maxHeight: '90dvh',
-          overflowY: dragY > 0 ? 'hidden' : 'auto',
-          overscrollBehavior: 'contain',
-          ...(dragY > 0 || releasing ? { transform: `translateY(${dragY}px)` } : {}),
-          ...(releasing ? { transition: 'transform 0.25s ease' } : {}),
-        }}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        <div className="sticky top-0 flex justify-center pt-3 pb-1 bg-white rounded-t-[2.5rem]">
-          <div className="h-1 w-10 rounded-full bg-gray-300" aria-hidden />
-        </div>
-        <div className="px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-          {children}
-        </div>
-      </div>
-    </>
-  )
-}
-
 function WindowForm({
   draft,
   index,
   attempted,
-  canRemove,
-  onClose,
   onChange,
-  onRemove,
 }: {
   draft: WindowDraft
   index: number
   attempted: boolean
-  canRemove: boolean
-  onClose: () => void
   onChange: (patch: Partial<WindowDraft>) => void
-  onRemove: () => void
 }) {
   const errors = windowErrors(draft, attempted)
-  const valid = isDraftValid(draft)
 
   return (
     <div className="space-y-5 pt-2">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-extrabold">Fenster {index + 1}</h2>
-        {canRemove && (
-          <button
-            type="button"
-            onClick={onRemove}
-            aria-label={`Fenster ${index + 1} entfernen`}
-            className="min-h-11 rounded-lg px-2 font-semibold text-red-700 underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-700 focus-visible:ring-offset-2"
-          >
-            Entfernen
-          </button>
-        )}
-      </div>
 
       <div>
         <p className="mb-1 font-semibold">Wie groß ist das Fenster?</p>
@@ -225,12 +125,6 @@ function WindowForm({
           {formatEUR(withVat(RULES.sillPerMeter))} je Meter inkl. USt. Wir rechnen mit der Fensterbreite, die genaue Länge klären wir beim Aufmaß.
         </ToggleRow>
       </div>
-
-      {valid && (
-        <Button variant="secondary" onClick={onClose}>
-          Fertig
-        </Button>
-      )}
     </div>
   )
 }
@@ -238,12 +132,6 @@ function WindowForm({
 export function StepWindows({ state, dispatch }: StepProps) {
   const [attempted, setAttempted] = useState(false)
 
-  useEffect(() => {
-    const first = state.windows[0]
-    if (first && first.widthCm === '' && first.heightCm === '' && state.expandedId === null) {
-      dispatch({ type: 'patch', patch: { expandedId: first.id } })
-    }
-  }, [])
 
   const openWindow = state.windows.find((w) => w.id === state.expandedId) ?? null
   const openIndex = openWindow ? state.windows.indexOf(openWindow) : -1
@@ -263,57 +151,70 @@ export function StepWindows({ state, dispatch }: StepProps) {
     dispatch({ type: 'go', step: 3 })
   }
 
-  return (
-    <>
-      <Shell step={2} onBack={() => dispatch({ type: 'go', step: 1 })} primary={{ label: 'Weiter zur Systemwahl', onClick: next }}>
-        <StepTitle title="Ihre Fenster" subtitle="Geben Sie jede Fenstergröße einmal an. Gleiche Fenster fassen Sie mit der Menge zusammen." />
-
-        <div className="space-y-4">
-          {state.windows.map((w, i) => {
-            const valid = isDraftValid(w)
-            return (
-              <button
-                key={w.id}
-                type="button"
-                onClick={() => dispatch({ type: 'patch', patch: { expandedId: w.id } })}
-                aria-label={`Fenster ${i + 1} bearbeiten`}
-                className="flex w-full items-center justify-between gap-3 rounded-2xl bg-gray-100 px-4 py-3 text-left transition duration-100 active:scale-[0.98] active:duration-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2"
-              >
-                <div className="min-w-0">
-                  <p className="font-extrabold">Fenster {i + 1}</p>
-                  {valid
-                    ? <p className="truncate text-[0.9375rem] text-brand-teal/70">{windowSummary(w)}</p>
-                    : attempted && <p className="text-[0.9375rem] text-red-400">Angaben unvollständig</p>
-                  }
-                </div>
-                <span aria-hidden className="shrink-0 text-xl text-brand-teal/40">›</span>
-              </button>
-            )
-          })}
-        </div>
-
-        <button
-          type="button"
-          onClick={() => dispatch({ type: 'addWindow' })}
-          className="mt-3 mx-auto flex items-center gap-2 rounded-2xl bg-gray-100 px-5 py-3 font-bold text-brand-teal transition duration-100 active:scale-[0.98] active:duration-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2"
-        >
-          <span className="text-xl leading-none">+</span> Weiteres Fenster
-        </button>
+  // Full-screen edit view
+  if (openWindow !== null) {
+    const valid = isDraftValid(openWindow)
+    return (
+      <Shell
+        onClose={close}
+        headerTitle={`Fenster ${openIndex + 1}`}
+        headerAction={state.windows.length > 1 ? (
+          <button
+            type="button"
+            onClick={() => { dispatch({ type: 'removeWindow', id: openWindow.id }); close() }}
+            aria-label={`Fenster ${openIndex + 1} entfernen`}
+            className="-ml-2 min-h-11 rounded-lg px-2 text-sm font-semibold text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2"
+          >
+            Entfernen
+          </button>
+        ) : <div className="size-12" />}
+        primary={{ label: 'Fenster speichern', onClick: close, disabled: !valid }}
+      >
+        <WindowForm
+          draft={openWindow}
+          index={openIndex}
+          attempted={attempted}
+          onChange={(patch) => dispatch({ type: 'updateWindow', id: openWindow.id, patch })}
+        />
       </Shell>
+    )
+  }
 
-      <BottomSheet open={openWindow !== null} onClose={close}>
-        {openWindow && (
-          <WindowForm
-            draft={openWindow}
-            index={openIndex}
-            attempted={attempted}
-            canRemove={state.windows.length > 1}
-            onClose={close}
-            onChange={(patch) => dispatch({ type: 'updateWindow', id: openWindow.id, patch })}
-            onRemove={() => { dispatch({ type: 'removeWindow', id: openWindow.id }); close() }}
-          />
-        )}
-      </BottomSheet>
-    </>
+  return (
+    <Shell step={2} onBack={() => dispatch({ type: 'go', step: 1 })} primary={{ label: 'Weiter zur Systemwahl', onClick: next }}>
+      <StepTitle title="Ihre Fenster" subtitle="Geben Sie jede Fenstergröße einmal an. Gleiche Fenster fassen Sie mit der Menge zusammen." />
+
+      <div className="space-y-4">
+        {state.windows.map((w, i) => {
+          const valid = isDraftValid(w)
+          return (
+            <button
+              key={w.id}
+              type="button"
+              onClick={() => dispatch({ type: 'patch', patch: { expandedId: w.id } })}
+              aria-label={`Fenster ${i + 1} bearbeiten`}
+              className="flex w-full items-center justify-between gap-3 rounded-2xl bg-gray-100 px-4 py-3 text-left transition duration-100 active:scale-[0.98] active:duration-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2"
+            >
+              <div className="min-w-0">
+                <p className="font-extrabold">Fenster {i + 1}</p>
+                {valid
+                  ? <p className="truncate text-[0.9375rem] text-brand-teal/70">{windowSummary(w)}</p>
+                  : attempted && <p className="text-[0.9375rem] text-red-400">Angaben unvollständig</p>
+                }
+              </div>
+              <span aria-hidden className="shrink-0 text-xl text-brand-teal/40">›</span>
+            </button>
+          )
+        })}
+      </div>
+
+      <button
+        type="button"
+        onClick={() => dispatch({ type: 'addWindow' })}
+        className="mt-3 mx-auto flex items-center gap-2 rounded-2xl bg-gray-100 px-5 py-3 font-bold text-brand-teal transition duration-100 active:scale-[0.98] active:duration-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2"
+      >
+        <span className="text-xl leading-none">+</span> Weiteres Fenster
+      </button>
+    </Shell>
   )
 }

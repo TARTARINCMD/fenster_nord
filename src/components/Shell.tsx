@@ -8,17 +8,25 @@ interface ShellProps {
   step?: number
   onBack?: () => void
   onLogo?: () => void
+  /** Renders a × button on the top-left with title centered. */
+  onClose?: () => void
+  /** Title shown in the header bar when onClose is set. */
+  headerTitle?: string
+  /** Optional action rendered on the top-right when onClose is set (e.g. a delete button). */
+  headerAction?: ReactNode
   primary?: { label: string; onClick: () => void; disabled?: boolean }
   footerExtra?: ReactNode
   children: ReactNode
 }
 
-export function Shell({ step, onBack, onLogo, primary, footerExtra, children }: ShellProps) {
+export function Shell({ step, onBack, onLogo, onClose, headerTitle, headerAction, primary, footerExtra, children }: ShellProps) {
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col">
       <header className="sticky top-0 z-10 bg-white px-4 pt-3 pb-2">
         <div className="flex h-10 items-center justify-between">
-          {onBack ? (
+          {onClose ? (
+            headerAction ?? <div className="size-12" />
+          ) : onBack ? (
             <button
               type="button"
               onClick={onBack}
@@ -39,11 +47,25 @@ export function Shell({ step, onBack, onLogo, primary, footerExtra, children }: 
           ) : (
             <img src="/mvn-logo.svg" alt="mvn.energy" width={66} height={36} className="h-9 w-auto" />
           )}
-          {step && (
+
+          {onClose ? (
+            <span className="text-[1.625rem] font-extrabold text-brand-teal">{headerTitle}</span>
+          ) : null}
+
+          {onClose ? (
+            <button
+              type="button"
+              onClick={onClose}
+              className="-mr-2 flex size-12 items-center justify-center rounded-lg text-3xl text-brand-teal/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2"
+              aria-label="Schließen"
+            >
+              ✕
+            </button>
+          ) : step ? (
             <span className="text-sm font-semibold text-brand-teal/70">
               Schritt {step} von {TOTAL_STEPS}
             </span>
-          )}
+          ) : null}
         </div>
         {step && (
           <div
