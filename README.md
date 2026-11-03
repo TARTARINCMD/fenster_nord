@@ -26,7 +26,6 @@ Die Aufgabe lässt Aussehen, Fragen und Reihenfolge offen und nennt Laien am Han
 - **Handy zuerst:** 375 px, 16 px Rand, Tippflächen ≥ 44 px, Auswahlkarten mit Radiopunkt, getestet von 320 bis 1280 px. Animationen entfallen bei „reduzierte Bewegung“.
 - **Optik:** mvn.energy-Farben und Logo, System-Schrift statt Webfont (schnell, und es geht keine Anfrage an Google Fonts). Zwischenzeitlich war es Schibsted Grotesk. Risiko: Die App wirkt wie ein mvn-Produkt, Anbieter bleibt Fenster Nord.
 - **Nichts wird gesendet:** Der Button „Anfrage absenden" und „Termin verbindlich buchen" lösen keinen Versand aus — die App hat kein Backend. Am Ende erscheint nur eine Zusammenfassung auf dem Bildschirm, ein Eintrag in den Fragen am Ende sagt das offen („Wurde meine Anfrage wirklich verschickt?“ – nein, Demo). Gleiches gilt für den Chatbot (feste Antworten, kein KI-Modell).
-- **„Rückruftermin“ statt „Aufmaß-Termin“:** Der gewählte Zeitraum ist der Anruf, bei dem das Aufmaß vereinbart wird, nicht der Besuch. Alles Weitere (Lieferzeit, Uw, BEG, Farben, Vorbereitung) steht als aufklappbare Fragen am Ende statt als Textwand.
 
 ## Was mir an den Unterlagen aufgefallen ist
 
