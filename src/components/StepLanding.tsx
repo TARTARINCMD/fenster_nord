@@ -4,10 +4,10 @@ import { Button } from './ui'
 
 /** Every claim on this page comes from Fenster Nord's documents (Preise-und-Produkte, Montagebedingungen) or the task brief. */
 const STEPS = [
-  ['Ort', 'Postleitzahl und Stockwerk'],
-  ['Fenster', 'Größe, Menge und Öffnungsart'],
-  ['System', 'Das passende Fenster wählen'],
-  ['Richtpreis', 'Mit nachvollziehbarer Aufschlüsselung'],
+  ['Ort', 'Postleitzahl und Stockwerk eingeben'],
+  ['Fenster', 'Größe, Anzahl und Öffnungsart je Fenster angeben'],
+  ['System', 'Das passende Fenstersystem auswählen'],
+  ['Richtpreis', 'Gesamtpreis mit jedem Posten im Detail prüfen'],
 ]
 
 const FACTS = [
@@ -59,8 +59,8 @@ function Reveal({
   return (
     <Tag
       ref={ref}
-      className={`${visible ? 'animate-fade-up' : 'opacity-0'} ${className}`}
-      style={{ animationDelay: `${delay}ms`, ...style }}
+      className={`transition-[opacity,transform] duration-700 ease-out ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'} ${className}`}
+      style={{ transitionDelay: `${delay}ms`, ...style }}
     >
       {children}
     </Tag>
@@ -73,7 +73,7 @@ function scrollToAblauf() {
 }
 
 export function StepLanding({ dispatch }: StepProps) {
-  const [lineRef, lineVisible] = useInView<HTMLOListElement>(0.15)
+  const [lineRef, lineVisible] = useInView<HTMLOListElement>(0.05)
 
   return (
     <main>
@@ -96,17 +96,16 @@ export function StepLanding({ dispatch }: StepProps) {
           type="button"
           onClick={scrollToAblauf}
           aria-label="Mehr erfahren"
-          className="absolute bottom-8 flex min-h-11 animate-fade-up flex-col items-center gap-1 px-4 text-xl font-bold text-white"
+          className="absolute bottom-8 flex min-h-11 animate-fade-up flex-col items-center gap-1 rounded-xl px-4 text-xl font-bold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-brand-teal"
           style={{ animationDelay: '700ms' }}
         >
           Mehr erfahren
-          <span aria-hidden className="animate-bob text-5xl leading-none">
-            ↓
-          </span>
+          <span aria-hidden className="text-5xl leading-none">↓</span>
         </button>
       </section>
 
-      <div className="mx-auto max-w-md px-4 pt-16 pb-16">
+
+      <div className="bg-gray-100 mx-auto max-w-md px-4 pt-16 pb-16">
         <section id="ablauf" className="scroll-mt-8">
           <Reveal>
             <h2 className="text-2xl font-extrabold">Der Ablauf</h2>
@@ -119,11 +118,11 @@ export function StepLanding({ dispatch }: StepProps) {
               style={{ transform: lineVisible ? 'scaleY(1)' : 'scaleY(0)' }}
             />
             {STEPS.map(([title, text], i) => (
-              <Reveal key={title} as="li" delay={i * 120} className="relative flex items-center gap-4">
+              <Reveal key={title} as="li" delay={i * 220} className="relative flex items-center gap-4">
                 <span className="relative z-[1] flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-green text-lg font-extrabold text-white">
                   {i + 1}
                 </span>
-                <span className="rounded-2xl bg-brand-green/10 px-4 py-3">
+                <span className="rounded-2xl bg-white px-4 py-3 shadow-sm">
                   <span className="block font-extrabold">{title}</span>
                   <span className="block text-[0.9375rem] text-brand-teal/80">{text}</span>
                 </span>
@@ -142,10 +141,10 @@ export function StepLanding({ dispatch }: StepProps) {
                 key={title}
                 as="li"
                 delay={i * 100}
-                className="rounded-2xl border-2 border-brand-yellow/60 bg-brand-yellow/10 p-4"
+                className="rounded-2xl p-4 shadow-sm bg-brand-yellow/30"
               >
-                <span className="block font-extrabold">{title}</span>
-                <span className="block text-[0.9375rem] text-brand-teal/80">{text}</span>
+                <span className="block font-extrabold text-brand-teal">{title}</span>
+                <span className="block text-[0.9375rem] text-brand-teal/70">{text}</span>
               </Reveal>
             ))}
           </ul>
@@ -153,9 +152,6 @@ export function StepLanding({ dispatch }: StepProps) {
 
         <Reveal className="mt-12">
           <Button onClick={() => dispatch({ type: 'go', step: 1 })}>Richtpreis berechnen</Button>
-          <p className="mt-6 text-center text-xs text-brand-teal/60">
-            Demo für eine Bewerbungsaufgabe. Fenster Nord GmbH ist ein fiktives Unternehmen.
-          </p>
         </Reveal>
       </div>
     </main>

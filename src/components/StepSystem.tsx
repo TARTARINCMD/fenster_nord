@@ -5,7 +5,7 @@ import { products } from '../lib/products'
 import { evaluateSystems } from '../lib/systems'
 import { Shell } from './Shell'
 import type { StepProps } from './types'
-import { ChoiceCard, Notice, StepTitle } from './ui'
+import { ChoiceCard, Notice } from './ui'
 
 export function StepSystem({ state, dispatch }: StepProps) {
   const items = toWindowItems(state.windows)
@@ -19,10 +19,15 @@ export function StepSystem({ state, dispatch }: StepProps) {
       onBack={() => dispatch({ type: 'go', step: 2 })}
       primary={{ label: 'Richtpreis anzeigen', disabled: !selected, onClick: () => dispatch({ type: 'go', step: 4 }) }}
     >
-      <StepTitle
-        title="Welches Fenster passt zu Ihnen?"
-        subtitle="Der Preis gilt für Ihre gesamte Bestellung mit diesem System, inklusive Montage und 19 % USt. Der Uw-Wert zeigt, wie viel Wärme das Fenster durchlässt: je kleiner, desto besser."
-      />
+      <div className="mb-6">
+        <h1 className="text-[1.75rem] font-extrabold leading-tight">Welches Fenster passt zu Ihnen?</h1>
+        <p className="mt-2 text-[1.0625rem] leading-relaxed text-brand-teal/80">
+          Der Preis gilt für Ihre gesamte Bestellung mit diesem System, inklusive Montage und 19 % USt.
+        </p>
+        <p className="mt-2 text-[1.0625rem] leading-relaxed text-brand-teal/80">
+          Der Uw-Wert zeigt, wie viel Wärme das Fenster durchlässt: <strong>je kleiner, desto besser.</strong>
+        </p>
+      </div>
 
       {!anyFits && (
         <Notice tone="warn">

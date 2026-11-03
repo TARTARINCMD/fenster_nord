@@ -8,9 +8,8 @@ export function StepRequest({ state, dispatch }: StepProps) {
   const { contact, mode, appointment } = state
   const days = useMemo(() => nextWeekdays(10), [])
 
-  const hasContactWay = contact.phone.trim() !== '' || contact.email.trim() !== ''
   const emailOk = contact.email.trim() === '' || /^\S+@\S+\.\S+$/.test(contact.email.trim())
-  const contactOk = contact.name.trim() !== '' && hasContactWay && emailOk
+  const contactOk = contact.name.trim() !== '' && contact.phone.trim() !== '' && emailOk
   const appointmentOk = mode === 'request' || (appointment !== null && appointment.date !== '' && appointment.slot !== '')
   const canSend = contactOk && appointmentOk
 
@@ -21,29 +20,34 @@ export function StepRequest({ state, dispatch }: StepProps) {
       step={5}
       onBack={() => dispatch({ type: 'go', step: 4 })}
       primary={{
-        label: mode === 'appointment' ? 'Termin verbindlich buchen (Vorschau)' : 'Anfrage absenden (Vorschau)',
+        label: mode === 'appointment' ? 'Termin verbindlich buchen' : 'Anfrage absenden',
         disabled: !canSend,
         onClick: () => dispatch({ type: 'go', step: 6 }),
       }}
     >
       <StepTitle title="Kostenloses Aufmaß" subtitle="Ein Mitarbeiter misst Ihre Fenster vor Ort aus. Erst danach erhalten Sie einen verbindlichen Preis." />
 
-      <Notice tone="info">
-        <strong>Vorschau:</strong> In dieser Demo wird nichts verschickt oder gebucht. Am Ende sehen Sie eine Zusammenfassung.
-      </Notice>
-
       <div className="mt-6 space-y-5">
         <Field label="Ihr Name">
           <TextInput autoComplete="name" value={contact.name} onChange={(e) => set({ name: e.target.value })} />
         </Field>
-        <Field label="Telefon" hint="Telefon oder E-Mail genügt.">
-          <TextInput type="tel" autoComplete="tel" inputMode="tel" value={contact.phone} onChange={(e) => set({ phone: e.target.value })} />
+        <Field label="Telefon">
+          <TextInput type="tel" autoComplete="tel" inputMode="tel" placeholder="z. B. 040 123 456 789" value={contact.phone} onChange={(e) => set({ phone: e.target.value })} />
         </Field>
-        <Field label="E-Mail" error={!emailOk ? 'Bitte geben Sie eine gültige E-Mail-Adresse ein.' : undefined}>
+        <Field
+          label={
+            <>
+              E-Mail{' '}
+              <span className="font-normal text-brand-teal/60">(optional)</span>
+            </>
+          }
+          error={!emailOk ? 'Bitte geben Sie eine gültige E-Mail-Adresse ein.' : undefined}
+        >
           <TextInput
             type="email"
             autoComplete="email"
             inputMode="email"
+            placeholder="ihre@email.de"
             value={contact.email}
             invalid={!emailOk}
             onChange={(e) => set({ email: e.target.value })}
@@ -65,12 +69,12 @@ export function StepRequest({ state, dispatch }: StepProps) {
                 role="radio"
                 aria-checked={mode === value}
                 onClick={() => dispatch({ type: 'patch', patch: { mode: value } })}
-                className={`flex min-h-14 items-center gap-2 rounded-xl border-2 px-3 text-left font-semibold ${
-                  mode === value ? 'border-brand-green bg-brand-green/10' : 'border-line bg-white'
+                className={`flex min-h-14 items-center justify-between gap-3 rounded-2xl px-4 text-left font-semibold transition duration-100 active:scale-[0.98] active:duration-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 ${
+                  mode === value ? 'bg-brand-green/15' : 'bg-gray-100'
                 }`}
               >
-                <RadioDot selected={mode === value} />
                 <span>{label}</span>
+                <RadioDot selected={mode === value} />
               </button>
             ))}
           </div>
@@ -125,6 +129,7 @@ export function StepRequest({ state, dispatch }: StepProps) {
           </div>
         )}
       </div>
+
     </Shell>
   )
 }

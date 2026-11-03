@@ -18,7 +18,9 @@ export interface Product {
 
 /** Parses a German number: "0,90" -> 0.9, "1,0" -> 1, "310" -> 310. */
 export function parseGermanNumber(value: string): number {
-  const n = Number(value.trim().replace(',', '.'))
+  const trimmed = value.trim()
+  if (trimmed === '') throw new Error(`Invalid number in product list: "${value}"`)
+  const n = Number(trimmed.replace(',', '.'))
   if (!Number.isFinite(n)) throw new Error(`Invalid number in product list: "${value}"`)
   return n
 }

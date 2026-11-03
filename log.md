@@ -86,6 +86,23 @@ Entry format:
 - **Not used:** Tabular numerals. In this font they also widen the punctuation ("1 . 923 , 28 €"), see AI mistakes.
 - **Verified:** The font loads in headless Chrome (`document.fonts.check`), price and breakdown screens checked on a screenshot, 52 tests, clean build and lint.
 
+### 2026-11-03: README written (German, one page)
+- **Decision:** `README.md` in German with the three parts the task asks for: assumptions and why, what stood out in the documents, where the AI was wrong. Plus live link, repo link, start commands and a short "not verified" list.
+- **Source:** Task PDF ("Eine kurze README (max. eine Seite)"), Preise-und-Produkte Nr. 5 and header date, Montagebedingungen §2, PROJECT.md findings 1-7 and A1-A7, Fenster Nord's reply of 2026-11-02. Re-read the PDFs before writing: no new contradiction with A1-A7.
+- **Alternatives:** English README (rejected by the user: German requested).
+- **Why:** Content comes from the "README checklist" below. The six AI mistakes are the ones with a visible symptom. Mentioned that `documents/` is not in the public repo.
+
+### 2026-11-03: README extended: design assumptions, test findings
+- **Decision:** New README section "Design-Annahmen" (flow, windows before system, presets, price breakdown, mobile rules, branding, preview-only elements). Added the three test-found AI mistakes and the 1-cent rounding note. Not added: animation feel, contrast (listed under not verified).
+- **Source:** Task PDF ("Wie die Anwendung aussieht, welche Fragen sie stellt und in welcher Reihenfolge, entscheidest du"), PROJECT.md "UX direction", log entries "UX flow approved", "Design uses mvn.energy branding", "Typeface: Schibsted Grotesk". No contradiction with A1-A7.
+- **Why:** The task asks for assumptions; design choices were decisions without a README home. README now exceeds one page by a little, see reply to the user.
+
+### 2026-11-03: Three subagents, README updated
+- **Decision:** Added `.claude/agents/test-writer.md`, `code-reviewer.md` (read-only: no Edit/Write) and `ux-ui-designer.md` (skills frontend-design, ui-ux-pro-max, web-design-guidelines; mobile points from Lovable's guide, only those that apply). README got a "Subagents" section and the summary-page decisions ("Rückruftermin", FAQ, nothing is sent). Landing steps reworded: headers stay nouns (Ort, Fenster, System, Richtpreis), the subtitle says the action.
+- **Source:** none in `documents/`: tooling and README only. Summary-page copy see "Summary page redesigned for the demo".
+- **Honest status in README:** only test-writer has run. code-reviewer and ux-ui-designer are created, not yet used. The earlier review used the `/code-review` skill.
+- **Open, for the user:** (1) The summary title says "Anfrage verschickt!" although nothing is sent (the FAQ explains it). (2) The BEG FAQ shows a general funding sentence even when the chosen system has Uw > 0,95. CLAUDE.md says: BEG hint only for Uw ≤ 0,95. The sentence is general and promises nothing, but it is a conflict with the rule, not decided yet.
+
 ---
 
 ## Steps
@@ -148,10 +165,32 @@ Entry format:
 - **Verified:** 52 tests, build and lint clean, no JS errors, flow and landing page rechecked in headless Chrome. Smallest text on the page is 15 px.
 - **Not done:** two-column layout on wide screens (the task is about phones, the narrow column on a desktop is acceptable).
 
+### 2026-11-02: Deployed on Vercel
+- **Decision:** Live at https://fenster-nord.vercel.app/ (deployed by the user from `main`, static build, no backend, no environment variables).
+- **Verified against the live URL (headless Chrome):** HTTP 200 from Vercel, logo and favicon load, title is correct, Schibsted Grotesk loads, no failed requests, no console errors. The JS bundle name (`index-DqI5Afk_.js`) is identical to a local build of commit `2d713cf`, so the live site is the current code. The full flow gives the same numbers as locally (1.616,20 € net, 1.923,28 € gross), the landing page reveals as designed, and there is no horizontal overflow at 320, 360, 430, 768 and 1280 px.
+- **Still true on the live site:** the browser contacts `fonts.googleapis.com` and `fonts.gstatic.com` (see the privacy question in the README checklist).
+- **Not verified:** a real phone.
+
 ### 2026-11-02: Repo published, `documents/` kept local
 - **Decision:** Pushed to https://github.com/TARTARINCMD/fenster_nord (public, branch `main`). `documents/` is in `.gitignore`.
 - **Why:** The repo is public. The customer PDFs and the interview notes in PROJECT.md shouldn't be published before submission. `data/produktliste.csv` is in the repo because the app needs it at build time.
 - **Note:** `CLAUDE.md` refers to `documents/`, which isn't in the repo. Fine for the work here. Mention it in the README if reviewers need the sources.
+
+### 2026-11-03: Test suite run, 3 production bugs found and fixed
+- **Decision:** Ran the full Vitest suite (293 tests, 9 files). Both mandatory fixtures passed. Found 3 failing tests caused by production-code bugs, not bad tests; fixed the production code.
+- **Source:** `src/lib/products.ts`, `src/lib/chatbot.ts`, test output.
+- **Result:** 293/293 passing. See AI mistakes below for details of each fix.
+
+### 2026-11-03: Code review, 3 further gaps found and fixed
+- **Decision:** Ran `/code-review` at high effort (7 finder angles, 1-vote verify). Found 4 candidates; 3 were real and fixed, 1 was informational only (non-ASCII stem fragility — low risk in a UTF-8 repo).
+- **Source:** diff of uncommitted working-tree changes; `src/lib/chatbot.ts`, `src/lib/pricing.test.ts`, `src/state.ts`, deleted `src/lib/ui-logic.test.ts`.
+- **Fixed:** (1) Added `'rolläd'` stem so "Rolläden" (single-l + umlaut) reaches the shutter answer. (2) Created `src/state.test.ts` (15 tests) covering `reducer` cases `go`, `addWindow`, `updateWindow`, `removeWindow`, and `reset` — these had no coverage after `ui-logic.test.ts` was deleted. (3) Added `windowNet` assertion for stulp × qty=2 to `pricing.test.ts` to restore the coverage that was lost when fixture 2 switched from `windowNet` to `unitNet`.
+- **Result:** 308/308 passing (10 test files). See AI mistakes below for details of gaps 1 and 2.
+
+### 2026-11-03: Summary page redesigned for the demo
+- **Decision:** (1) Title is now "Terminwunsch geschickt!" / "Anfrage verschickt!" with a mode-aware subtitle. (2) Removed the "Vorschau" warning notice — moved into the FAQ instead. (3) "Termin für das Aufmaß" renamed to **"Rückruftermin"**: the chosen slot is when the worker calls, not when they visit. (4) "Ort" section removed. (5) BEG notice removed from the main flow — it now lives in the FAQ under "Kann ich BEG-Förderung beantragen?" so the legal wording is still present but less prominent. (6) "So geht es weiter" bullet list replaced by a **FAQ accordion** (8 items: demo notice, next steps, delivery, Uw explained, BEG, colors, what's excluded, montage prep). (7) "Angaben ändern" and "Neu starten" buttons removed for the demo. (8) Single "Im Chat fragen" button at the bottom; floating chatbot button removed globally. (9) Logo tappable → dispatches `reset` → home (step 1).
+- **Source:** User feedback from screenshots. BEG copy unchanged (see "BEG threshold inclusive"). Uw FAQ content from https://www.deutsche-fensterbau.de/u-wert/.
+- **Why "Rückruftermin":** The appointment picker collects a time for an initial phone call, not for the on-site Aufmaß visit. Using "Aufmaß" for it was factually wrong.
 
 ---
 
@@ -193,11 +232,41 @@ Entry format:
 - **How noticed:** The overflow stayed, with the image gone. The numbers gave it away: the page was always exactly 28 px too wide, which is the `translateX(28px)` of the slide animation. Any style change in the test had made the browser re-fit its viewport, so hiding anything "fixed" it.
 - **Change:** Reverted both image changes (including the wrong comment), clipped horizontal overflow on `html, body`, and checked all screens at five widths.
 
+### 2026-11-03: `parseGermanNumber('')` returned 0 instead of throwing
+- **What the AI said:** `Number(''.trim().replace(',','.'))` evaluates to `Number('')` which is `0`, and `Number.isFinite(0)` is `true`, so the guard never fired for empty strings.
+- **How noticed:** A test in `products.test.ts` expected a throw on empty input; the test failed.
+- **Change:** Added an explicit empty-string guard before the `Number()` call in `src/lib/products.ts`.
+
+### 2026-11-03: Chatbot didn't match "unverbindlich"
+- **What the AI said:** The "verbindlich" topic used `w.startsWith('verbindlich')`. The tokenizer produces the single token `unverbindlich` for "Ist der Preis unverbindlich?", and `'unverbindlich'.startsWith('verbindlich')` is `false`, so the question fell through to the fallback.
+- **How noticed:** A test in `chatbot.test.ts` asserting that "Ist der Preis unverbindlich?" triggers the binding-price answer failed.
+- **Change:** Added `'unverbindlich'` as a keyword for that topic in `src/lib/chatbot.ts`.
+
+### 2026-11-03: Chatbot didn't match "Rollläden" (umlaut mismatch)
+- **What the AI said:** Keywords `rollladen`, `rolladen`, `rollo` were all checked via `startsWith`. The tokenizer produces `rollläden` (with ä) for "Was kosten Rollläden?", and `'rollläden'.startsWith('rollladen')` is `false` because `ä ≠ a`.
+- **How noticed:** A test in `chatbot.test.ts` asserting that "Was kosten Rollläden?" triggers the shutter answer failed.
+- **Change:** Replaced the full singular forms with stems (`'rolllad'`, `'rollläd'`) that cover both singular and plural via `startsWith`.
+
+### 2026-11-03: Roller-shutter stem replacement missed "Rolläden" (single-l + umlaut)
+- **What the AI said:** The replacement stems `'rolllad'`, `'rollläd'`, `'rollad'`, `'rollo'` were presented as complete coverage. None of them prefix-matches `'rolläden'` (single-l + umlaut): `'rolläden'[3]` is `ä` but `'rolllad'[3]` is `l`, `'rollläd'[4]` is `ä` but `'rolläden'[4]` is `d`, and `'rollad'[4]` is `a ≠ ä`.
+- **How noticed:** Code review angle C traced the tokenizer output for "Rolläden". Confirmed with `node -e`.
+- **Change:** Added `'rolläd'` as a fifth stem in `src/lib/chatbot.ts`. `'rolläden'.startsWith('rolläd')` is `true`.
+
+### 2026-11-03: Splitting ui-logic.test.ts left state.ts with no test coverage
+- **What the AI said:** When `src/lib/ui-logic.test.ts` was deleted and its contents split into module-specific test files, all seven tested modules were claimed to be covered. `src/state.ts` was not included in any new file.
+- **How noticed:** Code review angle B (removed-behavior audit): the `reducer` cases `addWindow` and `go` (direction tracking) from the deleted file had no replacement. Confirmed by grepping all `*.test.ts` for imports of `../state`.
+- **Change:** Created `src/state.test.ts` with 15 tests covering all reducer cases and `initialState`.
+
+### 2026-11-03: Test-writer agent computed the VAT in a rounding test wrongly
+- **What the AI said:** In the new rounding test (3 windows 1111 × 1111 mm) the `test-writer` subagent wrote VAT 397,57 by hand.
+- **How noticed:** The test failed on the first run. Hand check: correct VAT is 397,61 (gross 2.490,28).
+- **Change:** Expected values corrected in the test, production code was right.
+
 ---
 
 ## Open points and README checklist
 
-Status of the code: everything up to the Schibsted Grotesk font and this checklist is pushed to https://github.com/TARTARINCMD/fenster_nord (`main`, last commit `a79c820`, pushed by the user). Changes made after that commit are not on GitHub yet. Deploy on Vercel is **not done**. README is **not written**.
+Status of the code: pushed to https://github.com/TARTARINCMD/fenster_nord (`main`, last commit `2d713cf`), deployed at https://fenster-nord.vercel.app/. README is written (German, still to shorten to one page).
 
 **Assumptions to name in the README** (the customer confirmed items 1 to 7 of A1–A7 by email on 2026-11-02, the rest are ours):
 - One system for the whole order (simplification, per-window systems are a small change).
@@ -222,10 +291,9 @@ Status of the code: everything up to the Schibsted Grotesk font and this checkli
 
 **Not verified yet:**
 - A real phone (so far only headless Chrome with touch emulation, at 320, 360, 390, 430, 768 and 1280 px).
-- The deployed site.
 - The feel of the animations (only screenshots so far).
 - Contrast of every text and color combination (yellow with white text is avoided by rule, nothing measured).
 
 **Open question, privacy:** The font is loaded from Google Fonts (fonts.googleapis.com). For a German site this can be a data-protection problem (German courts have ruled against embedding Google Fonts from Google's servers without consent). Option: self-host the font files (for example the `@fontsource` package) so no request goes to Google. Not decided yet, not verified legally.
 
-**Still to do:** commit and push, deploy on Vercel, test on a phone, README (one page), mail to dinse@moovin.de and heymann@mvn.energy at the latest one working day before the interview.
+**Still to do:** test the live site on a real phone, README (one page, with the live link), mail to dinse@moovin.de and heymann@mvn.energy at the latest one working day before the interview.

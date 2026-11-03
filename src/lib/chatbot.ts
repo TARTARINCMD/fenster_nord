@@ -33,7 +33,7 @@ const topics: Topic[] = [
     answer: () => 'Die Lieferzeit beträgt in der Regel 6 bis 8 Wochen ab Aufmaß.',
   },
   {
-    keywords: ['verbindlich', 'festpreis', 'garantie', 'genau'],
+    keywords: ['unverbindlich', 'verbindlich', 'festpreis', 'garantie', 'genau'],
     answer: () =>
       'Der Preis hier ist ein unverbindlicher Richtpreis. Den genauen Preis erhalten Sie nach dem Aufmaß vor Ort.',
   },
@@ -57,7 +57,7 @@ const topics: Topic[] = [
       `Eine Fensterbank innen können Sie als Zusatz wählen. Sie kostet ${formatEUR(RULES.sillPerMeter)} je laufendem Meter (netto). Wir rechnen mit der Fensterbreite, die genaue Länge klären wir beim Aufmaß.`,
   },
   {
-    keywords: ['rollladen', 'rolladen', 'rollo'],
+    keywords: ['rolllad', 'rollläd', 'rollad', 'rolläd', 'rollo'],
     answer: () =>
       `Wir bieten Aufsatzrollläden mit Gurtwickler an: ${formatEUR(RULES.shutterPerMeter)} je laufendem Meter Fensterbreite (netto).`,
   },

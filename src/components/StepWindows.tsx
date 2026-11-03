@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { MAX_QUANTITY, isDraftValid, windowErrors, type WindowDraft } from '../lib/drafts'
 import { OPENING_LABEL, formatEUR, withVat } from '../lib/format'
 import { RULES, type Opening } from '../lib/pricing'
@@ -6,7 +6,6 @@ import { Shell } from './Shell'
 import type { StepProps } from './types'
 import { Button, Chip, ChoiceCard, Field, StepTitle, TextInput, ToggleRow } from './ui'
 
-/** Typical sizes in cm. Only a shortcut that prefills the form, no pricing impact. */
 const TYPICAL_SIZES: { w: number; h: number }[] = [
   { w: 60, h: 60 },
   { w: 100, h: 120 },
@@ -20,50 +19,73 @@ const OPENING_HELP: Record<Opening, string> = {
   stulp: `Zwei Flügel ohne feste Mittelstrebe (Stulp), beide lassen sich öffnen. Aufpreis ${formatEUR(withVat(RULES.stulpSurcharge))} je Fenster inkl. USt.`,
 }
 
-function summary(d: WindowDraft): string {
+function windowSummary(d: WindowDraft): string {
   const size = d.widthCm && d.heightCm ? `${d.widthCm} × ${d.heightCm} cm` : 'Größe fehlt'
   const extras = [d.shutter && 'Rollladen', d.sill && 'Fensterbank'].filter(Boolean).join(', ')
   return `${size} · ${d.quantity}× · ${OPENING_LABEL[d.opening]}${extras ? ` · ${extras}` : ''}`
 }
 
-interface CardProps {
-  draft: WindowDraft
-  index: number
-  expanded: boolean
-  attempted: boolean
-  canRemove: boolean
-  onToggle: () => void
-  onChange: (patch: Partial<WindowDraft>) => void
-  onRemove: () => void
+function BottomSheet({ open, onClose, children }: { open: boolean; onClose: () => void; children: ReactNode }) {
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [open, onClose])
+
+  if (!open) return null
+
+  return (
+    <>
+      <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm animate-[fade-in_0.2s_ease_both]" onClick={onClose} aria-hidden />
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-md animate-slide-up rounded-t-[2.5rem] bg-white"
+        style={{ maxHeight: '90dvh', overflowY: 'auto', overscrollBehavior: 'contain' }}
+      >
+        <div className="sticky top-0 flex justify-center pt-3 pb-1 bg-white rounded-t-[2.5rem]">
+          <div className="h-1 w-10 rounded-full bg-gray-300" aria-hidden />
+        </div>
+        <div className="px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+          {children}
+        </div>
+      </div>
+    </>
+  )
 }
 
-function WindowCard({ draft, index, expanded, attempted, canRemove, onToggle, onChange, onRemove }: CardProps) {
+function WindowForm({
+  draft,
+  index,
+  attempted,
+  canRemove,
+  onClose,
+  onChange,
+  onRemove,
+}: {
+  draft: WindowDraft
+  index: number
+  attempted: boolean
+  canRemove: boolean
+  onClose: () => void
+  onChange: (patch: Partial<WindowDraft>) => void
+  onRemove: () => void
+}) {
   const errors = windowErrors(draft, attempted)
   const valid = isDraftValid(draft)
 
-  if (!expanded) {
-    return (
-      <div className={`rounded-2xl border-2 p-4 ${valid ? 'border-line' : 'border-red-600'}`}>
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="font-extrabold">Fenster {index + 1}</p>
-            <p className="text-[0.9375rem] text-brand-teal/80">{summary(draft)}</p>
-            {!valid && <p className="mt-1 text-sm font-semibold text-red-700">Bitte vervollständigen Sie dieses Fenster.</p>}
-          </div>
-          <button type="button" onClick={onToggle} className="min-h-11 shrink-0 rounded-lg bg-brand-green/15 px-4 font-bold">
-            Bearbeiten
-          </button>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="animate-fade-up space-y-5 rounded-2xl border-2 border-brand-green p-4">
+    <div className="space-y-5 pt-2">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-extrabold">Fenster {index + 1}</h2>
         {canRemove && (
-          <button type="button" onClick={onRemove} className="min-h-11 px-2 font-semibold text-red-700 underline underline-offset-4">
+          <button
+            type="button"
+            onClick={onRemove}
+            aria-label={`Fenster ${index + 1} entfernen`}
+            className="min-h-11 rounded-lg px-2 font-semibold text-red-700 underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-700 focus-visible:ring-offset-2"
+          >
             Entfernen
           </button>
         )}
@@ -114,7 +136,7 @@ function WindowCard({ draft, index, expanded, attempted, canRemove, onToggle, on
             aria-label="Eins weniger"
             disabled={draft.quantity <= 1}
             onClick={() => onChange({ quantity: draft.quantity - 1 })}
-            className="size-14 rounded-xl bg-brand-teal text-2xl font-extrabold text-white transition duration-150 active:scale-95 disabled:opacity-30"
+            className="size-14 rounded-xl bg-brand-teal text-2xl font-extrabold text-white transition duration-100 active:scale-95 active:duration-75 disabled:opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2"
           >
             −
           </button>
@@ -126,7 +148,7 @@ function WindowCard({ draft, index, expanded, attempted, canRemove, onToggle, on
             aria-label="Eins mehr"
             disabled={draft.quantity >= MAX_QUANTITY}
             onClick={() => onChange({ quantity: draft.quantity + 1 })}
-            className="size-14 rounded-xl bg-brand-teal text-2xl font-extrabold text-white transition duration-150 active:scale-95 disabled:opacity-30"
+            className="size-14 rounded-xl bg-brand-teal text-2xl font-extrabold text-white transition duration-100 active:scale-95 active:duration-75 disabled:opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2"
           >
             +
           </button>
@@ -135,7 +157,7 @@ function WindowCard({ draft, index, expanded, attempted, canRemove, onToggle, on
 
       <fieldset>
         <legend className="mb-2 font-semibold">Wie soll sich das Fenster öffnen?</legend>
-        <div role="radiogroup" className="space-y-2">
+        <div className="space-y-2">
           {(Object.keys(OPENING_LABEL) as Opening[]).map((o) => (
             <ChoiceCard key={o} selected={draft.opening === o} onClick={() => onChange({ opening: o })} title={OPENING_LABEL[o]}>
               {OPENING_HELP[o]}
@@ -155,7 +177,7 @@ function WindowCard({ draft, index, expanded, attempted, canRemove, onToggle, on
       </div>
 
       {valid && (
-        <Button variant="secondary" onClick={onToggle}>
+        <Button variant="secondary" onClick={onClose}>
           Fertig
         </Button>
       )}
@@ -165,12 +187,25 @@ function WindowCard({ draft, index, expanded, attempted, canRemove, onToggle, on
 
 export function StepWindows({ state, dispatch }: StepProps) {
   const [attempted, setAttempted] = useState(false)
-  const allValid = state.windows.length > 0 && state.windows.every(isDraftValid)
+
+  useEffect(() => {
+    const first = state.windows[0]
+    if (first && first.widthCm === '' && first.heightCm === '' && state.expandedId === null) {
+      dispatch({ type: 'patch', patch: { expandedId: first.id } })
+    }
+  }, [])
+
+  const openWindow = state.windows.find((w) => w.id === state.expandedId) ?? null
+  const openIndex = openWindow ? state.windows.indexOf(openWindow) : -1
+
+  function close() {
+    dispatch({ type: 'patch', patch: { expandedId: null } })
+  }
 
   function next() {
+    const allValid = state.windows.length > 0 && state.windows.every(isDraftValid)
     if (!allValid) {
       setAttempted(true)
-      // open the first window that needs attention
       const bad = state.windows.find((w) => !isDraftValid(w))
       if (bad) dispatch({ type: 'patch', patch: { expandedId: bad.id } })
       return
@@ -179,28 +214,56 @@ export function StepWindows({ state, dispatch }: StepProps) {
   }
 
   return (
-    <Shell step={2} onBack={() => dispatch({ type: 'go', step: 1 })} primary={{ label: 'Weiter zur Systemwahl', onClick: next }}>
-      <StepTitle title="Ihre Fenster" subtitle="Geben Sie jede Fenstergröße einmal an. Gleiche Fenster fassen Sie mit der Menge zusammen." />
-      <div className="space-y-3">
-        {state.windows.map((w, i) => (
-          <WindowCard
-            key={w.id}
-            draft={w}
-            index={i}
-            expanded={state.expandedId === w.id}
+    <>
+      <Shell step={2} onBack={() => dispatch({ type: 'go', step: 1 })} primary={{ label: 'Weiter zur Systemwahl', onClick: next }}>
+        <StepTitle title="Ihre Fenster" subtitle="Geben Sie jede Fenstergröße einmal an. Gleiche Fenster fassen Sie mit der Menge zusammen." />
+
+        <div className="space-y-4">
+          {state.windows.map((w, i) => {
+            const valid = isDraftValid(w)
+            return (
+              <button
+                key={w.id}
+                type="button"
+                onClick={() => dispatch({ type: 'patch', patch: { expandedId: w.id } })}
+                aria-label={`Fenster ${i + 1} bearbeiten`}
+                className="flex w-full items-center justify-between gap-3 rounded-2xl bg-gray-100 px-4 py-3 text-left transition duration-100 active:scale-[0.98] active:duration-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2"
+              >
+                <div className="min-w-0">
+                  <p className="font-extrabold">Fenster {i + 1}</p>
+                  {valid
+                    ? <p className="truncate text-[0.9375rem] text-brand-teal/70">{windowSummary(w)}</p>
+                    : attempted && <p className="text-[0.9375rem] text-red-400">Angaben unvollständig</p>
+                  }
+                </div>
+                <span aria-hidden className="shrink-0 text-xl text-brand-teal/40">›</span>
+              </button>
+            )
+          })}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => dispatch({ type: 'addWindow' })}
+          className="mt-3 mx-auto flex items-center gap-2 rounded-2xl bg-gray-100 px-5 py-3 font-bold text-brand-teal transition duration-100 active:scale-[0.98] active:duration-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2"
+        >
+          <span className="text-xl leading-none">+</span> Weiteres Fenster
+        </button>
+      </Shell>
+
+      <BottomSheet open={openWindow !== null} onClose={close}>
+        {openWindow && (
+          <WindowForm
+            draft={openWindow}
+            index={openIndex}
             attempted={attempted}
             canRemove={state.windows.length > 1}
-            onToggle={() => dispatch({ type: 'patch', patch: { expandedId: state.expandedId === w.id ? null : w.id } })}
-            onChange={(patch) => dispatch({ type: 'updateWindow', id: w.id, patch })}
-            onRemove={() => dispatch({ type: 'removeWindow', id: w.id })}
+            onClose={close}
+            onChange={(patch) => dispatch({ type: 'updateWindow', id: openWindow.id, patch })}
+            onRemove={() => { dispatch({ type: 'removeWindow', id: openWindow.id }); close() }}
           />
-        ))}
-      </div>
-      <div className="mt-4 space-y-2">
-        <Button variant="secondary" onClick={() => dispatch({ type: 'addWindow' })}>
-          + Weiteres Fenster mit anderen Maßen
-        </Button>
-      </div>
-    </Shell>
+        )}
+      </BottomSheet>
+    </>
   )
 }

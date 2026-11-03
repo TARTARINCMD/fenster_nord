@@ -1,12 +1,29 @@
-import type { ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { toWindowItems } from '../lib/drafts'
 import { OPENING_LABEL, cmText, formatEUR, formatNumber } from '../lib/format'
-import { begHint } from '../lib/funding'
 import { RULES, calculateQuote, type Quote } from '../lib/pricing'
 import { products } from '../lib/products'
 import { Shell } from './Shell'
 import type { StepProps } from './types'
 import { Button, Notice, StepTitle } from './ui'
+
+
+function useCountUp(target: number, duration = 1200) {
+  const [value, setValue] = useState(0)
+  const raf = useRef(0)
+  useEffect(() => {
+    const start = performance.now()
+    function tick(now: number) {
+      const t = Math.min((now - start) / duration, 1)
+      const eased = 1 - Math.pow(1 - t, 3)
+      setValue(target * eased)
+      if (t < 1) raf.current = requestAnimationFrame(tick)
+    }
+    raf.current = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf.current)
+  }, [target, duration])
+  return value
+}
 
 export function Row({ label, sub, value, bold }: { label: ReactNode; sub?: ReactNode; value: string; bold?: boolean }) {
   return (
@@ -71,7 +88,7 @@ export function Breakdown({ quote, pricePerM2 }: { quote: Quote; pricePerM2: num
 
 export function GoodToKnow() {
   return (
-    <ul className="list-disc space-y-2 pl-5 text-[0.9375rem] leading-relaxed">
+    <ul className="list-disc space-y-2 pl-5 text-[0.9375rem] leading-relaxed text-brand-teal/50">
       <li>Das Aufmaß vor Ort ist kostenlos. Erst danach gibt es einen verbindlichen Preis.</li>
       <li>Die Lieferzeit beträgt in der Regel 6 bis 8 Wochen ab Aufmaß.</li>
       <li>Weiß ist Standard. Andere Farben und Dekore gibt es auf Anfrage.</li>
@@ -95,7 +112,7 @@ export function StepPrice({ state, dispatch }: StepProps) {
     )
   }
 
-  const hint = begHint(product)
+  const animatedGross = useCountUp(result.gross)
 
   return (
     <Shell
@@ -106,7 +123,7 @@ export function StepPrice({ state, dispatch }: StepProps) {
       <StepTitle title="Ihr Richtpreis" />
       <div className="rounded-2xl bg-brand-teal p-5 text-white">
         <p className="text-sm font-semibold uppercase tracking-wide text-brand-yellow">Unverbindlicher Richtpreis</p>
-        <p className="mt-1 text-[2.5rem] font-extrabold leading-tight">{formatEUR(result.gross)}</p>
+        <p className="mt-1 text-[2.5rem] font-extrabold leading-tight">{formatEUR(animatedGross)}</p>
         <p className="mt-1 text-[0.9375rem]">
           inkl. {Math.round(RULES.vatRate * 100)} % USt. · netto {formatEUR(result.net)}
         </p>
@@ -115,28 +132,16 @@ export function StepPrice({ state, dispatch }: StepProps) {
         </p>
       </div>
 
-      <div className="mt-4 space-y-3">
-        {result.notices.map((n) => (
-          <Notice key={n.code} tone="warn">
-            {n.text}
-          </Notice>
-        ))}
-        {hint && <Notice tone="good">{hint}</Notice>}
-      </div>
-
-      <details className="mt-5 rounded-xl border-2 border-line p-4" open>
-        <summary className="min-h-8 cursor-pointer font-extrabold">So setzt sich der Preis zusammen</summary>
+      <details className="mt-5 rounded-xl bg-gray-100 p-4" open>
+        <summary className="min-h-11 cursor-pointer font-extrabold">So setzt sich der Preis zusammen</summary>
         <div className="mt-2">
           <Breakdown quote={result} pricePerM2={product.pricePerM2} />
         </div>
       </details>
 
-      <details className="mt-3 rounded-xl border-2 border-line p-4">
-        <summary className="min-h-8 cursor-pointer font-extrabold">Gut zu wissen</summary>
-        <div className="mt-3">
-          <GoodToKnow />
-        </div>
-      </details>
+      <div className="mt-4">
+        <GoodToKnow />
+      </div>
 
       <div className="mt-4">
         <Button variant="ghost" onClick={() => dispatch({ type: 'go', step: 2 })}>

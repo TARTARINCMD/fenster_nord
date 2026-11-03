@@ -30,7 +30,6 @@ export default function App() {
         {state.step === 5 && <StepRequest {...props} />}
         {state.step === 6 && <StepSummary {...props} />}
       </div>
-      {/* Questions come last: the chat is offered on the summary only. */}
       {state.step === 6 && <Chatbot />}
     </>
   )

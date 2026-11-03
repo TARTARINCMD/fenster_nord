@@ -17,6 +17,12 @@ export function Chatbot() {
     endRef.current?.scrollIntoView({ block: 'end' })
   }, [messages, open])
 
+  useEffect(() => {
+    const handler = () => setOpen(true)
+    window.addEventListener('open-chat', handler)
+    return () => window.removeEventListener('open-chat', handler)
+  }, [])
+
   function ask(question: string) {
     const q = question.trim()
     if (!q) return
@@ -29,27 +35,25 @@ export function Chatbot() {
     ask(text)
   }
 
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      ask(text)
+    }
+  }
+
   if (!open) {
-    return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="fixed right-4 bottom-6 z-20 min-h-14 animate-pop rounded-full bg-brand-teal px-5 font-extrabold text-white shadow-lg transition duration-150 active:scale-95"
-        aria-label="Fragen zu Fenster Nord stellen (Demo-Assistent)"
-      >
-        Fragen? 💬
-      </button>
-    )
+    return null
   }
 
   return (
-    <div role="dialog" aria-label="Demo-Assistent" className="fixed inset-0 z-30 flex animate-slide-up flex-col bg-white sm:mx-auto sm:max-w-md">
+    <div role="dialog" aria-modal="true" aria-label="Demo-Assistent" className="fixed inset-0 z-30 flex animate-slide-up flex-col bg-white sm:mx-auto sm:max-w-md">
       <div className="flex items-center justify-between bg-brand-teal px-4 py-3 text-white">
         <div>
           <p className="font-extrabold">Assistent von Fenster Nord</p>
           <p className="text-sm opacity-80">Demo · vorgefertigte Antworten, keine KI</p>
         </div>
-        <button type="button" onClick={() => setOpen(false)} className="min-h-11 shrink-0 whitespace-nowrap px-3 font-semibold" aria-label="Chat schließen">
+        <button type="button" onClick={() => setOpen(false)} className="min-h-11 shrink-0 whitespace-nowrap rounded-lg px-3 font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-brand-teal" aria-label="Chat schließen">
           Schließen ✕
         </button>
       </div>
@@ -77,11 +81,13 @@ export function Chatbot() {
           ))}
         </div>
         <form onSubmit={submit} className="flex gap-2">
-          <input
+          <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="Ihre Frage"
-            className="h-14 min-w-0 flex-1 rounded-xl border-2 border-line px-4 text-base outline-none focus:border-brand-green"
+            rows={1}
+            className="min-h-14 min-w-0 flex-1 resize-none rounded-xl border-2 border-line px-4 py-4 text-base outline-none focus-visible:border-brand-green focus-visible:ring-2 focus-visible:ring-brand-green/30"
           />
           <button type="submit" className="min-h-14 rounded-xl bg-brand-yellow px-5 font-extrabold">
             Senden
