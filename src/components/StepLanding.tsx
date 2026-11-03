@@ -105,7 +105,8 @@ export function StepLanding({ dispatch }: StepProps) {
       </section>
 
 
-      <div className="bg-gray-100 mx-auto max-w-md px-4 pt-16 pb-16">
+      <div className="bg-gray-100">
+      <div className="mx-auto max-w-md px-4 pt-16 pb-16">
         <section id="ablauf" className="scroll-mt-8">
           <Reveal>
             <h2 className="text-2xl font-extrabold">Der Ablauf</h2>
@@ -153,6 +154,7 @@ export function StepLanding({ dispatch }: StepProps) {
         <Reveal className="mt-12">
           <Button onClick={() => dispatch({ type: 'go', step: 1 })}>Richtpreis berechnen</Button>
         </Reveal>
+      </div>
       </div>
     </main>
   )

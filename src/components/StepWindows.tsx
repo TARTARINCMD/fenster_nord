@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { MAX_QUANTITY, isDraftValid, windowErrors, type WindowDraft } from '../lib/drafts'
 import { OPENING_LABEL, formatEUR, withVat } from '../lib/format'
 import { RULES, type Opening } from '../lib/pricing'
@@ -26,12 +26,53 @@ function windowSummary(d: WindowDraft): string {
 }
 
 function BottomSheet({ open, onClose, children }: { open: boolean; onClose: () => void; children: ReactNode }) {
+  const sheetRef = useRef<HTMLDivElement>(null)
+  const startY = useRef(0)
+  const dragging = useRef(false)
+  const [dragY, setDragY] = useState(0)
+  const [releasing, setReleasing] = useState(false)
+
   useEffect(() => {
     if (!open) return
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    document.addEventListener('keydown', handler)
-    return () => document.removeEventListener('keydown', handler)
+    setDragY(0)
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
   }, [open, onClose])
+
+  // Attach touchmove with passive:false so we can preventDefault and block scroll while dragging.
+  useEffect(() => {
+    const el = sheetRef.current
+    if (!el) return
+    const onMove = (e: TouchEvent) => {
+      if (!dragging.current) return
+      const delta = e.touches[0].clientY - startY.current
+      if (delta < 0) { dragging.current = false; return }
+      e.preventDefault()
+      setDragY(delta)
+    }
+    el.addEventListener('touchmove', onMove, { passive: false })
+    return () => el.removeEventListener('touchmove', onMove)
+  }, [open])
+
+  function handleTouchStart(e: React.TouchEvent<HTMLDivElement>) {
+    if (sheetRef.current && sheetRef.current.scrollTop > 2) return
+    startY.current = e.touches[0].clientY
+    dragging.current = true
+  }
+
+  function handleTouchEnd() {
+    if (!dragging.current) return
+    dragging.current = false
+    if (dragY > 80) {
+      onClose()
+      setDragY(0)
+    } else {
+      setReleasing(true)
+      setDragY(0)
+      setTimeout(() => setReleasing(false), 250)
+    }
+  }
 
   if (!open) return null
 
@@ -39,10 +80,19 @@ function BottomSheet({ open, onClose, children }: { open: boolean; onClose: () =
     <>
       <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm animate-[fade-in_0.2s_ease_both]" onClick={onClose} aria-hidden />
       <div
+        ref={sheetRef}
         role="dialog"
         aria-modal="true"
         className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-md animate-slide-up rounded-t-[2.5rem] bg-white"
-        style={{ maxHeight: '90dvh', overflowY: 'auto', overscrollBehavior: 'contain' }}
+        style={{
+          maxHeight: '90dvh',
+          overflowY: dragY > 0 ? 'hidden' : 'auto',
+          overscrollBehavior: 'contain',
+          ...(dragY > 0 || releasing ? { transform: `translateY(${dragY}px)` } : {}),
+          ...(releasing ? { transition: 'transform 0.25s ease' } : {}),
+        }}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
         <div className="sticky top-0 flex justify-center pt-3 pb-1 bg-white rounded-t-[2.5rem]">
           <div className="h-1 w-10 rounded-full bg-gray-300" aria-hidden />
