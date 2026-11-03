@@ -4,7 +4,7 @@ import { OPENING_LABEL, formatEUR, withVat } from '../lib/format'
 import { RULES, type Opening } from '../lib/pricing'
 import { Shell } from './Shell'
 import type { StepProps } from './types'
-import { Button, Chip, ChoiceCard, Field, StepTitle, TextInput, ToggleRow } from './ui'
+import { Chip, ChoiceCard, Field, StepTitle, TextInput, ToggleRow } from './ui'
 
 const TYPICAL_SIZES: { w: number; h: number }[] = [
   { w: 60, h: 60 },
@@ -27,12 +27,10 @@ function windowSummary(d: WindowDraft): string {
 
 function WindowForm({
   draft,
-  index,
   attempted,
   onChange,
 }: {
   draft: WindowDraft
-  index: number
   attempted: boolean
   onChange: (patch: Partial<WindowDraft>) => void
 }) {
@@ -172,7 +170,6 @@ export function StepWindows({ state, dispatch }: StepProps) {
       >
         <WindowForm
           draft={openWindow}
-          index={openIndex}
           attempted={attempted}
           onChange={(patch) => dispatch({ type: 'updateWindow', id: openWindow.id, patch })}
         />
