@@ -13,6 +13,76 @@ const TYPICAL_SIZES: { w: number; h: number }[] = [
   { w: 180, h: 140 },
 ]
 
+// Window option icons — simple SVGs using standard German window notation
+const W = 30, H = 30 // viewBox size
+
+function IconDrehKipp() {
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      {/* outer frame */}
+      <rect x="2" y="2" width="26" height="26" rx="1.5" strokeWidth="2.5"/>
+      {/* inner sash */}
+      <rect x="5" y="5" width="20" height="20" rx="1" strokeWidth="1.4"/>
+      {/* handle on right */}
+      <line x1="23" y1="13" x2="23" y2="17" strokeWidth="2" strokeLinecap="round"/>
+      <circle cx="23" cy="15" r="1.2" fill="currentColor" stroke="none"/>
+      {/* hinges on left */}
+      <rect x="2" y="7" width="3" height="2.5" rx="0.5" fill="currentColor" stroke="none"/>
+      <rect x="2" y="20.5" width="3" height="2.5" rx="0.5" fill="currentColor" stroke="none"/>
+    </svg>
+  )
+}
+
+function IconFest() {
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
+      <rect x="3" y="3" width="24" height="24" rx="1.5"/>
+      <rect x="6" y="6" width="18" height="18" rx="1" strokeWidth="1.4"/>
+      {/* lock symbol in center */}
+      <rect x="12" y="15" width="6" height="5" rx="1" strokeWidth="1.4"/>
+      <path d="M13 15v-2a2 2 0 0 1 4 0v2" strokeWidth="1.4"/>
+    </svg>
+  )
+}
+
+function IconStulp() {
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
+      <rect x="2" y="3" width="11" height="24" rx="1.5"/>
+      <rect x="17" y="3" width="11" height="24" rx="1.5"/>
+      {/* handles facing each other */}
+      <line x1="10" y1="13" x2="10" y2="17"/>
+      <line x1="20" y1="13" x2="20" y2="17"/>
+    </svg>
+  )
+}
+
+function IconRollladen() {
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
+      <rect x="3" y="3" width="24" height="24" rx="1.5"/>
+      {/* slats */}
+      <line x1="3" y1="10" x2="27" y2="10" strokeWidth="2.5"/>
+      <line x1="3" y1="15" x2="27" y2="15" strokeWidth="2.5"/>
+      <line x1="3" y1="20" x2="27" y2="20" strokeWidth="2.5"/>
+      {/* pull cord */}
+      <line x1="15" y1="20" x2="15" y2="27" strokeWidth="1.2"/>
+    </svg>
+  )
+}
+
+function IconFensterbank() {
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
+      {/* window */}
+      <rect x="5" y="3" width="20" height="18" rx="1.5"/>
+      <line x1="15" y1="3" x2="15" y2="21" strokeWidth="1.2"/>
+      {/* sill — wider than window */}
+      <rect x="2" y="21" width="26" height="4" rx="1" strokeWidth="1.6"/>
+    </svg>
+  )
+}
+
 const OPENING_HELP: Record<Opening, string> = {
   'dreh-kipp': 'Lässt sich zur Seite drehen und oben kippen. Das ist der Standard und im Preis enthalten.',
   fest: `Lässt sich nicht öffnen. ${Math.round(RULES.fixedDiscount * 100)} % günstiger.`,
@@ -110,7 +180,13 @@ function WindowForm({
         <legend className="mb-2 font-semibold">Wie soll sich das Fenster öffnen?</legend>
         <div className="space-y-2">
           {(Object.keys(OPENING_LABEL) as Opening[]).map((o) => (
-            <ChoiceCard key={o} selected={draft.opening === o} onClick={() => onChange({ opening: o })} title={OPENING_LABEL[o]}>
+            <ChoiceCard
+              key={o}
+              selected={draft.opening === o}
+              onClick={() => onChange({ opening: o })}
+              title={OPENING_LABEL[o]}
+              icon={o === 'dreh-kipp' ? <IconDrehKipp /> : o === 'fest' ? <IconFest /> : <IconStulp />}
+            >
               {OPENING_HELP[o]}
             </ChoiceCard>
           ))}
@@ -119,10 +195,10 @@ function WindowForm({
 
       <div className="space-y-2">
         <p className="font-semibold">Zusätzlich gewünscht? (optional)</p>
-        <ToggleRow checked={draft.shutter} onChange={(shutter) => onChange({ shutter })} title="Rollladen">
+        <ToggleRow checked={draft.shutter} onChange={(shutter) => onChange({ shutter })} title="Rollladen (Jalousie)" icon={<IconRollladen />}>
           Aufsatzrollladen mit Gurtwickler, {formatEUR(withVat(RULES.shutterPerMeter))} je Meter Fensterbreite inkl. USt.
         </ToggleRow>
-        <ToggleRow checked={draft.sill} onChange={(sill) => onChange({ sill })} title="Fensterbank innen">
+        <ToggleRow checked={draft.sill} onChange={(sill) => onChange({ sill })} title="Fensterbank innen" icon={<IconFensterbank />}>
           {formatEUR(withVat(RULES.sillPerMeter))} je Meter inkl. USt. Wir rechnen mit der Fensterbreite, die genaue Länge klären wir beim Aufmaß.
         </ToggleRow>
       </div>

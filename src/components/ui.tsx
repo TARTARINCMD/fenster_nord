@@ -88,12 +88,14 @@ export function ChoiceCard({
   disabled,
   onClick,
   title,
+  icon,
   children,
 }: {
   selected: boolean
   disabled?: boolean
   onClick: () => void
   title: ReactNode
+  icon?: ReactNode
   children?: ReactNode
 }) {
   return (
@@ -107,6 +109,7 @@ export function ChoiceCard({
         selected ? 'bg-brand-green/15' : 'bg-gray-100'
       }`}
     >
+      {icon && <span className="shrink-0 text-brand-teal/60">{icon}</span>}
       <span className="min-w-0 flex-1">
         <span className="block font-extrabold">{title}</span>
         {children && <span className="mt-1 block text-[0.9375rem] leading-snug text-brand-teal/80">{children}</span>}
@@ -135,11 +138,13 @@ export function ToggleRow({
   checked,
   onChange,
   title,
+  icon,
   children,
 }: {
   checked: boolean
   onChange: (value: boolean) => void
   title: string
+  icon?: ReactNode
   children?: ReactNode
 }) {
   return (
@@ -150,7 +155,8 @@ export function ToggleRow({
         onChange={(e) => onChange(e.target.checked)}
         className="sr-only"
       />
-      <span>
+      {icon && <span className="shrink-0 text-brand-teal/60">{icon}</span>}
+      <span className="min-w-0 flex-1">
         <span className="block font-semibold">{title}</span>
         {children && <span className="block text-[0.9375rem] text-brand-teal/80">{children}</span>}
       </span>
