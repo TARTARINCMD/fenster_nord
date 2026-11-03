@@ -35,7 +35,6 @@ Die Aufgabe lässt Aussehen, Fragen und Reihenfolge offen und nennt Laien am Han
 4. **Fehlende Preise:** Zwei-Mann-Montage, Gerüst, Anfahrtszuschlag.
 5. **Reihenfolge der Preisregeln** ist nicht festgelegt (Mindestfläche, Festverglasung, Stulp, Mengenrabatt).
 6. **Maße:** Außenmaß Blendrahmen in mm in der CSV, Beispiel in cm, Laien kennen nur ihr altes Fenster. Die CSV mischt Formate („1,0“ und „0,90“), Semikolon, Dezimalkomma.
-7. **„Interne Arbeitsunterlage“:** Das BEG-Verkaufsargument ist nicht für Kunden gedacht.
 
 ## Wo Claude falsch lag
 
