@@ -90,7 +90,7 @@ export function StepLanding({ dispatch }: StepProps) {
           className="relative mt-5 animate-fade-up text-xl font-semibold text-brand-yellow"
           style={{ animationDelay: '200ms' }}
         >
-          Neue Fenster. Klarer Preis.
+          Jetzt Ihren Richtpreis berechnen.
         </p>
         <button
           type="button"
